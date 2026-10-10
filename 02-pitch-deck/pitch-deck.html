@@ -1,0 +1,337 @@
+<!-- Drop & Done — pitch deck. Open in a browser. ←/→ or click to navigate, F for fullscreen, Ctrl+P to export PDF (landscape). -->
+<meta charset="utf-8">
+<title>Drop &amp; Done — AI-Native Reimbursement Assistant</title>
+<style>
+  :root{
+    --ink:#0f172a; --mut:#475569; --soft:#94a3b8; --line:#e2e8f0;
+    --blue:#2563eb; --vio:#7c3aed; --grn:#15803d; --amb:#f59e0b; --red:#dc2626;
+    --bg:#f8fafc;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%;background:#0b1120;font-family:"Segoe UI",Arial,sans-serif;color:var(--ink)}
+  .deck{position:fixed;inset:0;display:flex;align-items:center;justify-content:center}
+  .slide{position:absolute;width:1280px;height:720px;background:#fff;border-radius:6px;overflow:hidden;
+         padding:56px 72px;display:none;transform-origin:center center}
+  .slide.on{display:block}
+  .slide h1{font-size:44px;line-height:1.1;font-weight:800;letter-spacing:-.5px}
+  .slide h2{font-size:34px;font-weight:800;letter-spacing:-.3px;margin-bottom:8px}
+  .kicker{font-size:13px;font-weight:700;letter-spacing:2px;color:var(--blue);text-transform:uppercase;margin-bottom:10px}
+  .lead{font-size:19px;color:var(--mut);line-height:1.45;max-width:980px}
+  .foot{position:absolute;left:72px;right:72px;bottom:22px;display:flex;justify-content:space-between;font-size:12px;color:var(--soft)}
+  .grid{display:grid;gap:18px}
+  .g2{grid-template-columns:1fr 1fr}.g3{grid-template-columns:repeat(3,1fr)}.g4{grid-template-columns:repeat(4,1fr)}
+  .card{border:1px solid var(--line);border-radius:12px;padding:20px 22px;background:#fff}
+  .card h3{font-size:18px;margin-bottom:8px}
+  .card p,.card li{font-size:15px;color:var(--mut);line-height:1.45}
+  .card ul{padding-left:18px}
+  .stat{font-size:52px;font-weight:800;letter-spacing:-1px;line-height:1}
+  .statl{font-size:15px;color:var(--mut);margin-top:8px;line-height:1.4}
+  .src{font-size:11px;color:var(--soft);margin-top:10px}
+  .pill{display:inline-block;padding:4px 10px;border-radius:999px;font-size:12px;font-weight:700}
+  table{border-collapse:collapse;width:100%;font-size:15px}
+  th,td{padding:10px 12px;border-bottom:1px solid var(--line);text-align:left}
+  th{font-size:12px;letter-spacing:1px;text-transform:uppercase;color:var(--soft)}
+  .dark{background:linear-gradient(135deg,#0f172a 0%,#1e1b4b 60%,#312e81 100%);color:#fff}
+  .dark .lead{color:#c7d2fe}.dark .foot{color:#6366f1}
+  .bar{height:12px;border-radius:6px}
+  .chat{background:#e5ddd5;border-radius:16px;padding:16px;height:100%;display:flex;flex-direction:column;gap:9px;font-size:13.5px}
+  .msg{max-width:82%;padding:9px 12px;border-radius:10px;line-height:1.4;box-shadow:0 1px 1px rgba(0,0,0,.08)}
+  .me{align-self:flex-end;background:#dcf8c6}.bot{align-self:flex-start;background:#fff}
+  .qr{display:inline-block;border:1px solid var(--blue);color:var(--blue);border-radius:999px;padding:2px 10px;margin:4px 4px 0 0;font-size:12px;font-weight:600}
+  .step{display:flex;gap:14px;align-items:flex-start;margin-bottom:14px}
+  .num{flex:none;width:34px;height:34px;border-radius:9px;background:var(--blue);color:#fff;font-weight:800;display:flex;align-items:center;justify-content:center}
+  .step b{display:block;font-size:16px}.step span{font-size:14px;color:var(--mut)}
+  .nav{position:fixed;bottom:14px;right:18px;color:#64748b;font-size:12px}
+  @media print{
+    @page{size:1280px 720px;margin:0}
+    html,body{background:#fff}
+    .deck{position:static;display:block}
+    .slide{display:block!important;position:relative;transform:none!important;border-radius:0;page-break-after:always}
+    .nav{display:none}
+  }
+</style>
+
+<div class="deck" id="deck">
+
+<!-- 1 TITLE -->
+<section class="slide dark">
+  <div style="margin-top:110px">
+    <div class="kicker" style="color:#a5b4fc">Innovation Lab · AI Business Use Case</div>
+    <h1 style="font-size:68px">Drop &amp; Done</h1>
+    <div style="font-size:30px;font-weight:600;color:#e0e7ff;margin-top:12px">From a pile of receipts to <span style="color:#86efac">"ready to submit"</span> in under 2 minutes</div>
+    <p class="lead" style="margin-top:28px">An AI-native reimbursement assistant in the chat apps employees already use. It reads every bill, groups the spend, checks policy, catches duplicates and fake receipts, and asks only the questions it can't answer itself.</p>
+  </div>
+  <div class="foot"><span>Presented by Supriya Manjrekar</span><span>01</span></div>
+</section>
+
+<!-- 2 PROBLEM -->
+<section class="slide">
+  <div class="kicker">The problem</div>
+  <h2>Reimbursement is low-value work that everyone pays for</h2>
+  <p class="lead">Employees collect bills, type in details, pick categories, check what's allowed and build a claim. Finance then re-checks all of it by hand.</p>
+  <div class="grid g4" style="margin-top:34px">
+    <div class="card"><div class="stat" style="color:var(--blue)">20 min</div><div class="statl">to prepare a single expense report</div><div class="src">GBTA Foundation / HRS</div></div>
+    <div class="card"><div class="stat" style="color:var(--red)">19%</div><div class="statl">of reports have errors or missing info, so they get sent back</div><div class="src">GBTA Foundation / HRS</div></div>
+    <div class="card"><div class="stat" style="color:var(--amb)">$58</div><div class="statl">fully loaded cost to process one report, plus <b>$52</b> to correct one</div><div class="src">GBTA Foundation / HRS</div></div>
+    <div class="card"><div class="stat" style="color:var(--vio)">14%</div><div class="statl">of fraudulent expense documents were AI-generated fakes (Sep 2025, up from 0%)</div><div class="src">AppZen via Skift, Nov 2025</div></div>
+  </div>
+  <div class="card" style="margin-top:22px;background:#fef2f2;border-color:#fecaca">
+    <p style="color:#7f1d1d;font-size:16px"><b>India makes it harder:</b> handwritten auto/taxi slips, faded thermal prints, UPI screenshots in place of invoices, bills in regional languages, and lost GST input credit when hotels don't bill to the company GSTIN.</p>
+  </div>
+  <div class="foot"><span>Drop &amp; Done</span><span>02</span></div>
+</section>
+
+<!-- 3 PERSONAS / JOURNEY -->
+<section class="slide">
+  <div class="kicker">Who feels the pain</div>
+  <h2>Three users, one broken loop</h2>
+  <div class="grid g3" style="margin-top:28px">
+    <div class="card"><h3>👤 Employee</h3><ul>
+      <li>Hunts for bills in email, WhatsApp and their wallet</li>
+      <li>Types every field by hand into a form</li>
+      <li>Has to guess the policy rules</li>
+      <li>Finds out about a rejection days later</li></ul>
+      <p style="margin-top:12px"><span class="pill" style="background:#fee2e2;color:#991b1b">Feels: "chore, unfair delays"</span></p></div>
+    <div class="card"><h3>✅ Approver</h3><ul>
+      <li>Gets 20 claim lines with no context</li>
+      <li>Either rubber-stamps them or digs through each one</li>
+      <li>Has no signal for what's risky</li></ul>
+      <p style="margin-top:12px"><span class="pill" style="background:#fef3c7;color:#92400e">Feels: "I can't really check this"</span></p></div>
+    <div class="card"><h3>🔎 Finance / Audit</h3><ul>
+      <li>Checks 100% of claims by hand</li>
+      <li>Chases missing GSTINs and invoices</li>
+      <li>Catches fraud only by sampling</li>
+      <li>Has no data on policy leakage</li></ul>
+      <p style="margin-top:12px"><span class="pill" style="background:#e0e7ff;color:#3730a3">Feels: "drowning in rework"</span></p></div>
+  </div>
+  <div style="margin-top:26px;display:flex;align-items:center;gap:10px;font-size:15px;color:var(--mut)">
+    <b style="color:var(--ink)">Today:</b> Collect → Type → Categorise → Guess policy → Submit → <span style="color:var(--red);font-weight:700">Rejected</span> → Fix → Resubmit → Approve → Audit → Pay
+    <span class="pill" style="background:#fee2e2;color:#991b1b;margin-left:auto">10–15 days</span>
+  </div>
+  <div class="foot"><span>Drop &amp; Done</span><span>03</span></div>
+</section>
+
+<!-- 4 MARKET -->
+<section class="slide">
+  <div class="kicker">Market research</div>
+  <h2>A large, fast-moving market that still feels form-first</h2>
+  <div class="grid g2" style="margin-top:22px;grid-template-columns:1fr 1.25fr">
+    <div>
+      <div class="card" style="margin-bottom:14px"><div class="stat" style="font-size:40px;color:var(--blue)">$9.1B → $21.4B</div><div class="statl">Global expense management, 2026 → 2035 (~10% CAGR)</div><div class="src">Global Market Insights</div></div>
+      <div class="card" style="margin-bottom:14px"><div class="stat" style="font-size:40px;color:var(--vio)">43% CAGR</div><div class="statl">AI-powered receipt automation segment, 2024–29</div><div class="src">Technavio</div></div>
+      <div class="card"><p><b>Consolidation:</b> Capital One bought Brex ($5.15B), Ramp passed $1B ARR, Sage bought Fyle. SAP Concur holds about 19% share.</p></div>
+    </div>
+    <div class="card">
+      <h3>Where incumbents leave room</h3>
+      <table>
+        <tr><th>Gap</th><th>Concur / Zoho / Happay</th><th>Drop &amp; Done</th></tr>
+        <tr><td>Interface</td><td>App + form, one receipt at a time</td><td><b>Chat, whole pile at once</b></td></tr>
+        <tr><td>Policy check</td><td>After submission</td><td><b>Before submission, explained</b></td></tr>
+        <tr><td>Missing info</td><td>Mandatory fields</td><td><b>≤3 targeted questions</b></td></tr>
+        <tr><td>Indian bills</td><td>Tuned for clean receipts</td><td><b>Handwritten, UPI, Hindi</b></td></tr>
+        <tr><td>Fake receipts</td><td>Emerging add-on</td><td><b>Built in, every claim</b></td></tr>
+        <tr><td>GST credit</td><td>Capture only</td><td><b>Prevent leakage at source</b></td></tr>
+      </table>
+    </div>
+  </div>
+  <div class="foot"><span>Drop &amp; Done</span><span>04</span></div>
+</section>
+
+<!-- 5 SOLUTION / UX -->
+<section class="slide">
+  <div class="kicker">The experience</div>
+  <h2>Drop the pile. Answer two taps. Submit.</h2>
+  <div class="grid" style="grid-template-columns:1.05fr 1fr;margin-top:18px;height:540px;gap:30px">
+    <div class="chat">
+      <div class="msg me">📎 12 files: WhatsApp Image…jpg, Hotel_Saffron_Invoice.png, Screenshot_UPI.png, auto_receipt.jpg …</div>
+      <div class="msg bot">Read 12 bills ✅ I found <b>2 trips</b> and <b>₹29,247</b> in spend.<br>🧩 Delhi trip · 21–23 Sep · 9 bills<br>🧩 Pune day trip · 29 Sep · 3 bills</div>
+      <div class="msg bot">🚩 <b>IMG_1004.jpg</b> is the same cab ride as <b>QuickRide_21Sep.jpg</b>, just a different photo, so I left it out.<br>⚠️ Hotel invoice has no company GSTIN, so we lose ₹1,392 of GST credit. Ask the hotel for a revised invoice?<br><span class="qr">Yes, draft email</span><span class="qr">Skip</span></div>
+      <div class="msg bot">Question 1 of 3: dinner on 22 Sep for ₹4,200 is over the solo meal limit. Was it a client meal?<br><span class="qr">Yes, client meal</span><span class="qr">Just me, claim ₹1,500</span></div>
+      <div class="msg me">Rahul Mehta (Zenith Pharma), Priya Nair (Zenith Pharma)</div>
+      <div class="msg bot"><b>Claim ready ✅</b> 11 lines · ₹27,847 · 1 flagged for finance<br><small>Pile to ready in 0m 35s · 3 questions asked</small><br><span class="qr" style="background:var(--blue);color:#fff">Submit claim</span><span class="qr">Review lines</span></div>
+    </div>
+    <div>
+      <div class="card" style="margin-bottom:14px"><h3>Design principles</h3><ul>
+        <li><b>Zero forms.</b> The chat is the whole interface.</li>
+        <li><b>Batch first.</b> Handle the whole pile, not one receipt at a time.</li>
+        <li><b>Ask by exception.</b> Only gaps that block submission; tap to answer.</li>
+        <li><b>Explain every flag.</b> Say what's wrong, why, and how to fix it.</li>
+        <li><b>Always show status.</b> ✅ complete · ⚠️ needs info · 🚩 questionable</li></ul></div>
+      <div class="card" style="background:#f0fdf4;border-color:#bbf7d0"><h3 style="color:var(--grn)">North-star UX metric</h3>
+        <p style="font-size:17px"><b>Time-to-ready-to-submit</b><br>Target under <b>2 min</b> for a 10-receipt trip, against about 20 min today.</p></div>
+    </div>
+  </div>
+  <div class="foot"><span>Drop &amp; Done</span><span>05</span></div>
+</section>
+
+<!-- 6 AI INTERVENTION -->
+<section class="slide">
+  <div class="kicker">AI intervention</div>
+  <h2>Where AI does the work, and where rules keep it honest</h2>
+  <div class="grid g2" style="margin-top:24px;gap:40px">
+    <div>
+      <div class="step"><div class="num">1</div><div><b>Read every document</b><span>Claude vision turns photos, PDFs and screenshots into strict JSON: vendor, date, amount, tax, GSTIN, city and payment mode, with a <b>confidence score per field</b>.</span></div></div>
+      <div class="step"><div class="num">2</div><div><b>Validate deterministically</b><span>Checks that items + tax = total, the GSTIN checksum, that dates make sense, and converts foreign currency. These are rules, not guesses.</span></div></div>
+      <div class="step"><div class="num">3</div><div><b>Organise</b><span>Groups expenses into trips or events by date window, city and travel bookings.</span></div></div>
+      <div class="step"><div class="num">4</div><div><b>Check policy</b><span>Rules-as-code by grade and city tier. The LLM handles fuzzy cases and writes the explanation.</span></div></div>
+    </div>
+    <div>
+      <div class="step"><div class="num" style="background:var(--red)">5</div><div><b>Protect integrity</b><span>Duplicates at 3 levels (image hash, same transaction, across employees), signals of AI-generated receipts, and anomalies against peers.</span></div></div>
+      <div class="step"><div class="num" style="background:var(--grn)">6</div><div><b>Recover GST</b><span>Flags missing company GSTIN while it can still be fixed, and tags eligible input credit.</span></div></div>
+      <div class="step"><div class="num" style="background:var(--vio)">7</div><div><b>Ask only what's missing</b><span>Low-confidence or missing fields become at most 3 batched, tap-to-answer questions.</span></div></div>
+      <div class="step"><div class="num" style="background:var(--amb)">8</div><div><b>Prepare &amp; route</b><span>Builds the submission-ready claim, gives approvers a one-line summary, and sends finance a risk-ranked audit queue.</span></div></div>
+    </div>
+  </div>
+  <div class="card" style="margin-top:6px;background:#eef2ff;border-color:#c7d2fe"><p style="font-size:15px;color:#3730a3"><b>Human in the loop by design:</b> AI prepares and flags, people approve payouts. Every AI decision is logged with the image region and policy clause it relied on.</p></div>
+  <div class="foot"><span>Drop &amp; Done</span><span>06</span></div>
+</section>
+
+<!-- 7 ARCHITECTURE -->
+<section class="slide" style="padding:36px 48px">
+  <div class="kicker">Solution architecture</div>
+  <img src="../01-architecture/architecture-diagram.svg" alt="Architecture diagram" style="width:100%;height:600px;object-fit:contain;margin-top:4px">
+  <div class="foot"><span>Drop &amp; Done</span><span>07</span></div>
+</section>
+
+<!-- 8 BACKEND DIFFERENTIATOR -->
+<section class="slide">
+  <div class="kicker">The backend that makes it reliable</div>
+  <h2>A claim is a state machine, not a form</h2>
+  <div class="grid g2" style="margin-top:22px;gap:28px">
+    <div class="card">
+      <h3>Each extracted field carries evidence</h3>
+      <pre style="font-family:Consolas,monospace;font-size:13.5px;background:#0f172a;color:#e2e8f0;padding:16px;border-radius:10px;line-height:1.5;margin-top:8px">"amount":  { "value": 4200,
+             "confidence": 0.97,
+             "source": "bottom-right total" },
+"gstin":   { "value": null,
+             "confidence": 0.0,
+             "status": "MISSING" },
+"category":{ "value": "Meals",
+             "confidence": 0.88 }</pre>
+      <p style="margin-top:10px">Confidence ≥ 0.85 is auto-filled. Below that, or missing, it becomes a question. Anything contradictory is flagged.</p>
+    </div>
+    <div>
+      <div class="card" style="margin-bottom:14px"><h3>Line states</h3>
+        <p><span class="pill" style="background:#dcfce7;color:#166534">COMPLETE</span> <span class="pill" style="background:#fef3c7;color:#92400e">NEEDS_INFO</span> <span class="pill" style="background:#fee2e2;color:#991b1b">QUESTIONABLE</span> <span class="pill" style="background:#e2e8f0;color:#334155">EXCLUDED</span></p></div>
+      <div class="card" style="margin-bottom:14px"><h3>Claim lifecycle</h3>
+        <p style="font-size:15px">DRAFT → <b>READY</b> → SUBMITTED → APPROVED → PAID</p>
+        <p style="margin-top:6px">A claim is <b>READY</b> only when every line is COMPLETE or EXCLUDED.</p></div>
+      <div class="card"><h3>Category checklists</h3>
+        <p>🏨 Hotel: invoice, stay dates, GSTIN, city tier<br>🍽 Meal &gt; cap: attendees + purpose<br>🚕 Cab: from/to or trip link<br>✈️ Flight: boarding pass or e-ticket</p></div>
+    </div>
+  </div>
+  <div class="foot"><span>Drop &amp; Done</span><span>08</span></div>
+</section>
+
+<!-- 9 IMPACT -->
+<section class="slide">
+  <div class="kicker">Business impact</div>
+  <h2>Measurable value across time, money and risk</h2>
+  <p class="lead" style="font-size:15px">Illustrative model: 10,000 claim-filing employees × 2 claims/month = <b>240,000 claims/year</b>. Assumptions are listed so they can be replaced with real figures.</p>
+  <div class="grid g2" style="margin-top:18px;grid-template-columns:1.35fr 1fr;gap:26px">
+    <div class="card">
+      <table>
+        <tr><th>Lever</th><th>Today</th><th>With Drop &amp; Done</th><th>Annual value</th></tr>
+        <tr><td>Employee prep time</td><td>20 min</td><td>3 min</td><td><b>68,000 hrs</b></td></tr>
+        <tr><td>Rework rate</td><td>19%</td><td>&lt;5%</td><td><b>10,000 hrs</b></td></tr>
+        <tr><td>Finance check / claim</td><td>10 min, all claims</td><td>3 min, risk-based</td><td><b>28,000 hrs</b></td></tr>
+        <tr><td>Reimbursement cycle</td><td>10–15 days</td><td>2–3 days</td><td>Employee experience</td></tr>
+        <tr><td>GST input credit</td><td>Partly captured</td><td>Leakage prevented</td><td><b>₹ direct recovery</b></td></tr>
+        <tr><td>Duplicates / fakes</td><td>Sampled</td><td>100% screened</td><td><b>Loss avoided</b></td></tr>
+      </table>
+    </div>
+    <div>
+      <div class="card" style="background:#0f172a;color:#fff;border:none;margin-bottom:14px">
+        <div style="font-size:13px;color:#93c5fd;font-weight:700;letter-spacing:1px">PRODUCTIVITY RELEASED</div>
+        <div class="stat" style="color:#fff;margin-top:6px">~1,06,000 hrs</div>
+        <div class="statl" style="color:#cbd5e1">per year, about <b style="color:#86efac">₹6.4 Cr</b> at an assumed ₹600/hr loaded cost</div>
+      </div>
+      <div class="card">
+        <p style="font-size:14px"><b>Plus hard savings:</b> GST credit recovered on hotel and travel invoices, and duplicate or fake claims stopped before payout. At ~1% of claims flagged as suspect, even a fraction prevented covers the run cost.</p>
+        <p class="src">Benchmarks: GBTA (time, error rate) · AppZen / SAP Concur (fake receipt prevalence)</p>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span>Drop &amp; Done</span><span>09</span></div>
+</section>
+
+<!-- 10 KPIs -->
+<section class="slide">
+  <div class="kicker">How we'll prove it</div>
+  <h2>KPIs measured from day one</h2>
+  <div class="grid g3" style="margin-top:28px">
+    <div class="card"><h3 style="color:var(--blue)">Experience</h3><ul>
+      <li>Time-to-ready-to-submit (median)</li><li>Questions asked per claim (target ≤ 2)</li><li>Employee CSAT / NPS</li><li>Days from spend to payout</li></ul></div>
+    <div class="card"><h3 style="color:var(--vio)">AI quality</h3><ul>
+      <li>Field extraction accuracy (labelled eval set)</li><li>% fields auto-filled without edits</li><li>Duplicate precision and recall</li><li>Confidence calibration</li></ul></div>
+    <div class="card"><h3 style="color:var(--grn)">Business</h3><ul>
+      <li>First-pass approval rate</li><li>Finance hours per 1,000 claims</li><li>GST credit recovered (₹)</li><li>Suspect ₹ blocked before payout</li></ul></div>
+  </div>
+  <div class="card" style="margin-top:22px">
+    <h3>Pilot success criteria (8 weeks, one business unit)</h3>
+    <div class="grid g4" style="margin-top:10px;gap:10px">
+      <div><div class="stat" style="font-size:32px;color:var(--blue)">&lt; 3 min</div><div class="statl">median time-to-ready</div></div>
+      <div><div class="stat" style="font-size:32px;color:var(--vio)">≥ 95%</div><div class="statl">field accuracy on key fields</div></div>
+      <div><div class="stat" style="font-size:32px;color:var(--grn)">≥ 90%</div><div class="statl">first-pass approval</div></div>
+      <div><div class="stat" style="font-size:32px;color:var(--amb)">≥ 60%</div><div class="statl">less finance review effort</div></div>
+    </div>
+  </div>
+  <div class="foot"><span>Drop &amp; Done</span><span>10</span></div>
+</section>
+
+<!-- 11 ROADMAP + RISKS -->
+<section class="slide">
+  <div class="kicker">Roadmap &amp; risks</div>
+  <h2>Start narrow, prove value, then scale</h2>
+  <div class="grid g3" style="margin-top:22px">
+    <div class="card" style="border-top:4px solid var(--blue)"><h3>Phase 1 · Prototype</h3><p><b>Now</b></p><ul>
+      <li>Web chat with drag-and-drop pile</li><li>Claude extraction + confidence</li><li>Grouping, policy, duplicates</li><li>Mock reimbursement API</li></ul></div>
+    <div class="card" style="border-top:4px solid var(--vio)"><h3>Phase 2 · Pilot</h3><p><b>+8 weeks</b></p><ul>
+      <li>Teams / WhatsApp channel</li><li>HRMS + SSO integration</li><li>Approver copilot</li><li>GST recovery + fake-receipt signals</li></ul></div>
+    <div class="card" style="border-top:4px solid var(--grn)"><h3>Phase 3 · Scale</h3><p><b>+6 months</b></p><ul>
+      <li>SAP / finance system integration</li><li>Card + UPI feed, zero-touch capture</li><li>Cross-employee duplicate detection</li><li>Spend analytics for finance</li></ul></div>
+  </div>
+  <div class="card" style="margin-top:18px">
+    <table>
+      <tr><th>Risk</th><th>Mitigation</th></tr>
+      <tr><td>Extraction errors on poor images</td><td>Confidence thresholds; ask instead of guess; deterministic arithmetic checks</td></tr>
+      <tr><td>Data privacy (PII, bank data)</td><td>PII masking before LLM, India data residency, encryption, RBAC, audit log</td></tr>
+      <tr><td>Over-trusting AI decisions</td><td>AI never approves payouts; every flag cites evidence; humans override, and overrides feed the eval set</td></tr>
+    </table>
+  </div>
+  <div class="foot"><span>Drop &amp; Done</span><span>11</span></div>
+</section>
+
+<!-- 12 CLOSE -->
+<section class="slide dark">
+  <div style="margin-top:120px">
+    <div class="kicker" style="color:#a5b4fc">The ask</div>
+    <h1 style="font-size:54px">Let employees drop their bills,<br>and let AI do the paperwork.</h1>
+    <div class="grid g3" style="margin-top:44px;gap:18px">
+      <div class="card" style="background:rgba(255,255,255,.07);border-color:rgba(255,255,255,.15)"><h3 style="color:#fff">1 · Live demo</h3><p style="color:#c7d2fe">12 messy bills to a ready claim, timed live</p></div>
+      <div class="card" style="background:rgba(255,255,255,.07);border-color:rgba(255,255,255,.15)"><h3 style="color:#fff">2 · Pilot BU</h3><p style="color:#c7d2fe">One business unit, 8 weeks, measured against KPIs</p></div>
+      <div class="card" style="background:rgba(255,255,255,.07);border-color:rgba(255,255,255,.15)"><h3 style="color:#fff">3 · Sponsors</h3><p style="color:#c7d2fe">Finance policy owner + IT security partner</p></div>
+    </div>
+  </div>
+  <div class="foot"><span>Drop &amp; Done · Thank you</span><span>12</span></div>
+</section>
+
+</div>
+<div class="nav" id="nav"></div>
+
+<script>
+  const slides=[...document.querySelectorAll('.slide')];
+  let i=0;
+  function fit(){const s=Math.min(innerWidth/1280,innerHeight/720)*0.96;slides.forEach(el=>el.style.transform=`scale(${s})`)}
+  function show(n){i=Math.max(0,Math.min(slides.length-1,n));slides.forEach((s,k)=>s.classList.toggle('on',k===i));
+    document.getElementById('nav').textContent=`${i+1} / ${slides.length}  ·  ← →  ·  F fullscreen`;location.hash=i+1}
+  addEventListener('keydown',e=>{
+    if(['ArrowRight','PageDown',' '].includes(e.key))show(i+1);
+    if(['ArrowLeft','PageUp'].includes(e.key))show(i-1);
+    if(e.key==='Home')show(0); if(e.key==='End')show(slides.length-1);
+    if(e.key==='f'||e.key==='F')document.documentElement.requestFullscreen?.();
+  });
+  addEventListener('click',e=>{if(!e.target.closest('a'))show(e.clientX>innerWidth/2?i+1:i-1)});
+  addEventListener('resize',fit);
+  fit();show((parseInt(location.hash.slice(1))||1)-1);
+</script>

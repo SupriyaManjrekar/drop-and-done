@@ -1,0 +1,29 @@
+{
+  "description": "Hotel caps per night on the pre-GST rate (§4.2), GST input credit (§8.1) and vendor GSTIN checksum.",
+  "today": "2026-09-30",
+  "cases": [
+    {
+      "name": "metro hotel within cap, company GSTIN on invoice",
+      "lines": [
+        { "doc": { "vendor": "Harbour Inn", "category": "Lodging", "document_type": "tax_invoice", "date": "2026-09-22", "city": "Mumbai",
+                   "check_in": "2026-09-20", "check_out": "2026-09-22", "total_amount": 14560, "tax_amount": 1560, "line_items": [["Room charges", 13000]],
+                   "vendor_gstin": "$GSTIN(27AAHCH1122L1Z)", "buyer_gstin": "$COMPANY_GSTIN" },
+          "expect": { "status": "COMPLETE", "claimable": 14560, "flags": ["itc_ok", "hotel_ok"] } }
+      ]
+    },
+    {
+      "name": "other-tier hotel over cap, company GSTIN missing",
+      "lines": [
+        { "doc": { "vendor": "Godavari Lodge", "category": "Lodging", "document_type": "tax_invoice", "date": "2026-09-22", "city": "Nashik", "total_amount": 6720, "tax_amount": 720 },
+          "expect": { "status": "QUESTIONABLE", "claimable": 6720, "flags": ["gst_lost", "hotel_cap"] } }
+      ]
+    },
+    {
+      "name": "vendor GSTIN with a bad format",
+      "lines": [
+        { "doc": { "vendor": "Corner Bakery", "category": "Meals", "date": "2026-09-22", "city": "Pune", "total_amount": 300, "vendor_gstin": "27AAPFV3344H1X5" },
+          "expect": { "status": "QUESTIONABLE", "claimable": 300, "flags": ["gstin_invalid"] } }
+      ]
+    }
+  ]
+}

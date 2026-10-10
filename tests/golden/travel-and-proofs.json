@@ -1,0 +1,71 @@
+{
+  "description": "Cabs (§6.1), flight class (§3.1), payment proof without invoice (§7.2), currency, integrity signals and exclusions.",
+  "today": "2026-09-30",
+  "cases": [
+    {
+      "name": "cab over ₹1,500 is a warning",
+      "lines": [
+        { "doc": { "vendor": "Metro Cabs", "category": "Local conveyance", "document_type": "app_receipt", "date": "2026-09-20", "total_amount": 1800, "city": "Mumbai" },
+          "expect": { "status": "COMPLETE", "claimable": 1800, "flags": ["cab_cap"] } }
+      ]
+    },
+    {
+      "name": "business class flight, company GSTIN present",
+      "lines": [
+        { "doc": { "vendor": "IndiFly Airlines", "category": "Airfare", "document_type": "e_ticket", "date": "2026-09-21", "city": "New Delhi", "travel_class": "Business",
+                   "total_amount": 12600, "tax_amount": 600, "buyer_gstin": "$COMPANY_GSTIN" },
+          "expect": { "status": "QUESTIONABLE", "claimable": 12600, "flags": ["itc_ok", "flight_class"] } }
+      ]
+    },
+    {
+      "name": "UPI proof at the ₹500 limit",
+      "lines": [
+        { "doc": { "vendor": "Sharma Tea", "category": "Meals", "document_type": "upi_screenshot", "date": "2026-09-23", "total_amount": 500 },
+          "expect": { "status": "COMPLETE", "claimable": 500, "flags": ["noinv_ok"] } }
+      ]
+    },
+    {
+      "name": "handwritten slip at ₹501",
+      "lines": [
+        { "doc": { "vendor": "Auto-rickshaw", "category": "Local conveyance", "document_type": "handwritten_slip", "date": "2026-09-23", "total_amount": 501, "city": "Delhi" },
+          "expect": { "status": "QUESTIONABLE", "claimable": 501, "flags": ["noinv_over"] } }
+      ]
+    },
+    {
+      "name": "currency not in the FX table",
+      "lines": [
+        { "doc": { "vendor": "Ramen Ya", "category": "Meals", "date": "2026-09-23", "currency": "JPY", "total_amount": 1000 },
+          "expect": { "status": "QUESTIONABLE", "claimable": 1000, "flags": ["currency_unknown"] } }
+      ]
+    },
+    {
+      "name": "known foreign currency is converted",
+      "lines": [
+        { "doc": { "vendor": "Cafe Lisboa", "category": "Meals", "date": "2026-09-23", "currency": "EUR", "total_amount": 15 },
+          "expect": { "status": "COMPLETE", "claimable": 1380, "flags": [] } }
+      ]
+    },
+    {
+      "name": "integrity signals route to finance",
+      "lines": [
+        { "doc": { "vendor": "Grill House", "category": "Meals", "date": "2026-09-23", "total_amount": 900, "integrity_signals": ["Total line uses a different typeface"] },
+          "expect": { "status": "QUESTIONABLE", "claimable": 900, "flags": ["integrity"] } }
+      ]
+    },
+    {
+      "name": "not a receipt is excluded",
+      "lines": [
+        { "doc": { "is_receipt": false, "document_type": "not_a_receipt", "category": "Other", "vendor": "Menu card" },
+          "expect": { "status": "EXCLUDED", "claimable": 0, "flags": ["not_receipt"] } }
+      ]
+    },
+    {
+      "name": "user excluded",
+      "lines": [
+        { "doc": { "vendor": "Metro Cabs", "category": "Local conveyance", "document_type": "app_receipt", "date": "2026-09-20", "total_amount": 300 },
+          "answers": { "exclude": true },
+          "expect": { "status": "EXCLUDED", "claimable": 0, "flags": ["user_excluded"] } }
+      ]
+    }
+  ]
+}

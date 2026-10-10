@@ -1,0 +1,51 @@
+{
+  "description": "Duplicate detection: exact file, same transaction from a different photo, the notDuplicate override, and prior claims (policy §9.1).",
+  "today": "2026-09-30",
+  "cases": [
+    {
+      "name": "exact copy of the same file is excluded",
+      "lines": [
+        { "doc": { "hash": "h-cab-1", "vendor": "Metro Cabs", "category": "Local conveyance", "document_type": "app_receipt", "date": "2026-09-20", "total_amount": 300, "city": "Mumbai" },
+          "expect": { "status": "COMPLETE", "claimable": 300, "flags": [] } },
+        { "doc": { "hash": "h-cab-1", "vendor": "Metro Cabs", "category": "Local conveyance", "document_type": "app_receipt", "date": "2026-09-20", "total_amount": 300, "city": "Mumbai" },
+          "expect": { "status": "EXCLUDED", "claimable": 0, "flags": ["duplicate"] } }
+      ]
+    },
+    {
+      "name": "same transaction, different photo, is excluded",
+      "lines": [
+        { "doc": { "vendor": "Metro Cabs", "category": "Local conveyance", "document_type": "app_receipt", "date": "2026-09-20", "total_amount": 300, "city": "Mumbai" },
+          "expect": { "status": "COMPLETE", "claimable": 300, "flags": [] } },
+        { "doc": { "vendor": "Metro Cabs", "category": "Local conveyance", "document_type": "app_receipt", "date": "2026-09-20", "total_amount": 300, "city": "Mumbai" },
+          "expect": { "status": "EXCLUDED", "claimable": 0, "flags": ["duplicate"] } }
+      ]
+    },
+    {
+      "name": "notDuplicate answer keeps a genuine repeat",
+      "lines": [
+        { "doc": { "vendor": "Metro Cabs", "category": "Local conveyance", "document_type": "app_receipt", "date": "2026-09-20", "total_amount": 300, "city": "Mumbai" },
+          "expect": { "status": "COMPLETE", "claimable": 300, "flags": [] } },
+        { "doc": { "vendor": "Metro Cabs", "category": "Local conveyance", "document_type": "app_receipt", "date": "2026-09-20", "total_amount": 300, "city": "Mumbai" },
+          "answers": { "notDuplicate": true },
+          "expect": { "status": "COMPLETE", "claimable": 300, "flags": [] } }
+      ]
+    },
+    {
+      "name": "already in a submitted claim: questionable, still claimable",
+      "priorKeys": { "metrocabs|300|2026-09-20": "RCL-2026-001041" },
+      "lines": [
+        { "doc": { "vendor": "Metro Cabs", "category": "Local conveyance", "document_type": "app_receipt", "date": "2026-09-20", "total_amount": 300, "city": "Mumbai" },
+          "expect": { "status": "QUESTIONABLE", "claimable": 300, "flags": ["prior_claim"] } }
+      ]
+    },
+    {
+      "name": "prior claim is not cleared by notDuplicate",
+      "priorKeys": { "metrocabs|300|2026-09-20": "RCL-2026-001041" },
+      "lines": [
+        { "doc": { "vendor": "Metro Cabs", "category": "Local conveyance", "document_type": "app_receipt", "date": "2026-09-20", "total_amount": 300, "city": "Mumbai" },
+          "answers": { "notDuplicate": true },
+          "expect": { "status": "QUESTIONABLE", "claimable": 300, "flags": ["prior_claim"] } }
+      ]
+    }
+  ]
+}

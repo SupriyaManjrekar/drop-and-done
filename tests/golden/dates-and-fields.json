@@ -1,0 +1,56 @@
+{
+  "description": "Date window (60 days, future dates) and required fields below their confidence thresholds (date 0.7, amount 0.6).",
+  "today": "2026-09-30",
+  "cases": [
+    {
+      "name": "future date",
+      "lines": [
+        { "doc": { "vendor": "City Taxi", "category": "Local conveyance", "document_type": "app_receipt", "date": "2026-10-02", "total_amount": 200, "city": "Pune" },
+          "expect": { "status": "QUESTIONABLE", "claimable": 200, "flags": ["future_date"] } }
+      ]
+    },
+    {
+      "name": "exactly 60 days old is inside the window",
+      "lines": [
+        { "doc": { "vendor": "City Taxi", "category": "Local conveyance", "document_type": "app_receipt", "date": "2026-08-01", "total_amount": 200, "city": "Pune" },
+          "expect": { "status": "COMPLETE", "claimable": 200, "flags": [] } }
+      ]
+    },
+    {
+      "name": "61 days old is stale (warning only)",
+      "lines": [
+        { "doc": { "vendor": "City Taxi", "category": "Local conveyance", "document_type": "app_receipt", "date": "2026-07-31", "total_amount": 200, "city": "Pune" },
+          "expect": { "status": "COMPLETE", "claimable": 200, "flags": ["stale"] } }
+      ]
+    },
+    {
+      "name": "date read at 0.69 confidence becomes a question",
+      "lines": [
+        { "doc": { "vendor": "City Taxi", "category": "Local conveyance", "document_type": "app_receipt", "date": "2026-09-20", "total_amount": 200, "city": "Pune", "conf": { "date": 0.69 } },
+          "expect": { "status": "NEEDS_INFO", "claimable": 200, "flags": ["date_unreadable"] } }
+      ]
+    },
+    {
+      "name": "date answered by the user",
+      "lines": [
+        { "doc": { "vendor": "City Taxi", "category": "Local conveyance", "document_type": "app_receipt", "date": null, "total_amount": 200, "city": "Pune" },
+          "answers": { "date": "2026-09-21" },
+          "expect": { "status": "COMPLETE", "claimable": 200, "flags": [] } }
+      ]
+    },
+    {
+      "name": "amount read at 0.59 confidence becomes a question",
+      "lines": [
+        { "doc": { "vendor": "City Taxi", "category": "Local conveyance", "document_type": "app_receipt", "date": "2026-09-20", "total_amount": 200, "city": "Pune", "conf": { "total_amount": 0.59 } },
+          "expect": { "status": "NEEDS_INFO", "claimable": null, "flags": ["amount_unreadable"] } }
+      ]
+    },
+    {
+      "name": "unclear category becomes a question",
+      "lines": [
+        { "doc": { "vendor": "Shop 12", "category": "Other", "date": "2026-09-20", "total_amount": 400, "city": "Pune" },
+          "expect": { "status": "NEEDS_INFO", "claimable": 400, "flags": ["category_unclear"] } }
+      ]
+    }
+  ]
+}

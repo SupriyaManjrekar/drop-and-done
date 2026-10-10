@@ -1,0 +1,27 @@
+# Build output (compiled by run.bat / run.sh)
+03-prototype/server/out/
+out/
+*.class
+
+# Secrets: ANTHROPIC_API_KEY lives in the environment only
+.env
+.env.*
+*.key
+
+# Node (tests have no dependencies, but just in case)
+node_modules/
+coverage/
+npm-debug.log*
+
+# Local agent / editor settings
+.claude/
+.vscode/
+.idea/
+*.iml
+
+# OS junk
+.DS_Store
+Thumbs.db
+desktop.ini
+*~
+*.swp

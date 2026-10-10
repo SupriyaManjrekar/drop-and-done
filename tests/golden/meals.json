@@ -1,0 +1,52 @@
+{
+  "description": "Meals (§5.1), client entertainment (§5.3) and alcohol (§5.4).",
+  "today": "2026-09-30",
+  "cases": [
+    {
+      "name": "alcohol removed, under the cap",
+      "lines": [
+        { "doc": { "vendor": "Spice Route", "category": "Meals", "date": "2026-09-25", "city": "Mumbai", "total_amount": 1000, "line_items": [["Thali", 600], ["Beer", 400, true]] },
+          "expect": { "status": "COMPLETE", "claimable": 600, "flags": ["alcohol"] } }
+      ]
+    },
+    {
+      "name": "solo meal over cap blocks",
+      "lines": [
+        { "doc": { "vendor": "Spice Route", "category": "Meals", "date": "2026-09-25", "city": "Mumbai", "total_amount": 2400, "line_items": [["Platter", 2400]] },
+          "expect": { "status": "NEEDS_INFO", "claimable": 2400, "flags": ["meal_over_cap"] } }
+      ]
+    },
+    {
+      "name": "answered solo: capped at ₹1,500",
+      "lines": [
+        { "doc": { "vendor": "Spice Route", "category": "Meals", "date": "2026-09-25", "city": "Mumbai", "total_amount": 2400, "line_items": [["Platter", 2400]] },
+          "answers": { "mealType": "solo" },
+          "expect": { "status": "COMPLETE", "claimable": 1500, "flags": ["meal_capped"] } }
+      ]
+    },
+    {
+      "name": "client meal without attendees blocks",
+      "lines": [
+        { "doc": { "vendor": "Spice Route", "category": "Meals", "date": "2026-09-25", "city": "Mumbai", "total_amount": 2400 },
+          "answers": { "mealType": "client" },
+          "expect": { "status": "NEEDS_INFO", "claimable": 2400, "flags": ["attendees_missing"] } }
+      ]
+    },
+    {
+      "name": "client meal, 1 attendee, within 2 x ₹2,000",
+      "lines": [
+        { "doc": { "vendor": "Spice Route", "category": "Meals", "date": "2026-09-25", "city": "Mumbai", "total_amount": 2400 },
+          "answers": { "mealType": "client", "attendees": ["Asha Rao (Northwind Labs)"] },
+          "expect": { "status": "COMPLETE", "claimable": 2400, "flags": ["ent_ok"] } }
+      ]
+    },
+    {
+      "name": "client meal, 1 attendee, over 2 x ₹2,000 is capped",
+      "lines": [
+        { "doc": { "vendor": "Spice Route", "category": "Meals", "date": "2026-09-25", "city": "Mumbai", "total_amount": 5000 },
+          "answers": { "mealType": "client", "attendees": ["Asha Rao (Northwind Labs)"] },
+          "expect": { "status": "COMPLETE", "claimable": 4000, "flags": ["meal_capped", "ent_ok"] } }
+      ]
+    }
+  ]
+}

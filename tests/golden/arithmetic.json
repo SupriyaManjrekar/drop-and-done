@@ -1,0 +1,44 @@
+{
+  "description": "Arithmetic reconciliation: items + tax vs printed total, tolerance max(₹2, 1%), and the two answers.",
+  "today": "2026-09-30",
+  "cases": [
+    {
+      "name": "reconciles within tolerance",
+      "lines": [
+        { "doc": { "vendor": "Udupi Cafe", "category": "Meals", "date": "2026-09-25", "city": "Mumbai", "total_amount": 318, "tax_amount": 15, "line_items": [["Dosa", 200], ["Coffee", 100]] },
+          "expect": { "status": "COMPLETE", "claimable": 318, "flags": [] } }
+      ]
+    },
+    {
+      "name": "mismatch blocks until answered",
+      "lines": [
+        { "doc": { "vendor": "Udupi Cafe", "category": "Meals", "date": "2026-09-25", "city": "Mumbai", "total_amount": 400, "tax_amount": 15, "line_items": [["Dosa", 200], ["Coffee", 100]] },
+          "expect": { "status": "NEEDS_INFO", "claimable": 400, "flags": ["arith_mismatch"] } }
+      ]
+    },
+    {
+      "name": "answer printed: kept as a risk for finance",
+      "lines": [
+        { "doc": { "vendor": "Udupi Cafe", "category": "Meals", "date": "2026-09-25", "city": "Mumbai", "total_amount": 400, "tax_amount": 15, "line_items": [["Dosa", 200], ["Coffee", 100]] },
+          "answers": { "arith": "printed" },
+          "expect": { "status": "QUESTIONABLE", "claimable": 400, "flags": ["arith_mismatch"] } }
+      ]
+    },
+    {
+      "name": "answer items: uses items + GST",
+      "lines": [
+        { "doc": { "vendor": "Udupi Cafe", "category": "Meals", "date": "2026-09-25", "city": "Mumbai", "total_amount": 400, "tax_amount": 15, "line_items": [["Dosa", 200], ["Coffee", 100]] },
+          "answers": { "arith": "items" },
+          "expect": { "status": "COMPLETE", "claimable": 315, "flags": ["arith_fixed"] } }
+      ]
+    },
+    {
+      "name": "typed amount skips the check",
+      "lines": [
+        { "doc": { "vendor": "Udupi Cafe", "category": "Meals", "date": "2026-09-25", "city": "Mumbai", "total_amount": 400, "tax_amount": 15, "line_items": [["Dosa", 200], ["Coffee", 100]] },
+          "answers": { "amount": 380 },
+          "expect": { "status": "COMPLETE", "claimable": 380, "flags": [] } }
+      ]
+    }
+  ]
+}
