@@ -124,7 +124,7 @@ Deliverable: the email asks for diagrams (plural). `01-architecture/architecture
 - The key is stored in sessionStorage, or in localStorage if the visitor ticks *Remember on this device*. It is sent only to Google's API in the `x-goog-api-key` header, never in a URL.
 - `ai.js` sends the same extraction request, translated to Gemini `generateContent` (same translation as `server/gemini_bridge.py`). A 429 waits for the API's `retryDelay` (max 60 s, three times); 5xx is retried twice.
 - `store.js` implements `/api/claims` and `/api/claims/{id}/decision` in localStorage with the server's validation, ids, transitions and 400 / 404 / 409 errors. Claims are per browser.
-- `.gitlab-ci.yml` runs `node --test`, then publishes `01-architecture`, `02-pitch-deck` and `03-prototype/app` to GitLab Pages, with a root page that redirects to the app.
+- Hosted on GitHub Pages from `main` (root `index.html` redirects to the app; `.nojekyll`). On GitLab, `.gitlab-ci.yml` runs `node --test`, then publishes `01-architecture`, `02-pitch-deck` and `03-prototype/app` to GitLab Pages, with a root page that redirects to the app.
 
 ## 4. Data model
 

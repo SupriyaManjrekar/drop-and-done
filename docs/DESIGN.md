@@ -217,7 +217,7 @@ node tests/smoke.js                          # server API smoke test (start the 
 ### 3.3 Deployment
 - **Supported deployment: local only.** The server binds to `127.0.0.1`. This is deliberate: `/api/claude` has no authentication, so exposing it would let anyone spend the API key.
 - **Never host it with a key.** If a hosted link is wanted, host demo mode only and label it as such.
-- **Static hosting** (GitLab Pages through `.gitlab-ci.yml`, or any static server) runs the app serverless, as in section 3.4.
+- **Static hosting** (GitHub Pages from `main` at https://supriyamanjrekar.github.io/drop-and-done/, GitLab Pages through `.gitlab-ci.yml`, or any static server) runs the app serverless, as in section 3.4.
 - **Keep the folder layout.** The launchers serve the folder above `03-prototype`; the server redirects `/` to `/03-prototype/app/` and the app links to `/02-pitch-deck/`. Moving `app/` or `server/` needs the serve root, the redirect and the deck link changed together.
 - Keep any `.env` file outside the served folder; the static file handler would serve it.
 

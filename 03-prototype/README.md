@@ -23,7 +23,7 @@ Then open **http://localhost:8787/** (set `PORT` to use another port). The pitch
 
 The API key stays on the local Java server, which forwards requests to Claude. The browser never sees it. The server listens on 127.0.0.1 only, and it uses the Windows trust store and system proxy, so it works behind a corporate proxy. Requests opt into server-side `fallbacks: "default"`: if a safety classifier declines, the request is re-run on a recommended model instead of failing.
 
-**No server at all:** serve the repository root with any static file server (or use the GitLab Pages site built by `.gitlab-ci.yml`) and open `/03-prototype/app/`. The app notices there is no `/api/config` and runs serverless: a start screen asks for a free Gemini key from [Google AI Studio](https://aistudio.google.com/apikey) or offers the demo pack, `ai.js` calls Gemini straight from the browser, and `store.js` keeps claims in localStorage with the same rules as the server. The key stays in sessionStorage (or localStorage with *Remember*) and goes only to Google's API.
+**No server at all:** serve the repository root with any static file server (or use the GitHub Pages site, https://supriyamanjrekar.github.io/drop-and-done/) and open `/03-prototype/app/`. The app notices there is no `/api/config` and runs serverless: a start screen asks for a free Gemini key from [Google AI Studio](https://aistudio.google.com/apikey) or offers the demo pack, `ai.js` calls Gemini straight from the browser, and `store.js` keeps claims in localStorage with the same rules as the server. The key stays in sessionStorage (or localStorage with *Remember*) and goes only to Google's API.
 
 With a Gemini key, `run-gemini` starts `server/gemini_bridge.py` on 127.0.0.1:8788 (set `BRIDGE_PORT` to change it) and points the Java server at it through `ANTHROPIC_URL`. The bridge turns each extraction request into a Gemini call and the answer back, so the app itself is unchanged. The key stays in that process.
 
@@ -90,7 +90,7 @@ Tests inject `today` = 30 Sep 2026 at local midnight, so they do not depend on t
 
 - **Supported: run it locally.** The server binds to `127.0.0.1` only, so nothing is exposed to the network. Keep the folder layout as it is: the launchers serve the folder above `03-prototype`, `/` redirects to `/03-prototype/app/`, and the deck is served from `/02-pitch-deck/`.
 - **Never host it with an API key.** `/api/claude` has no authentication; anyone who can reach it can spend the key.
-- **Static hosting (GitLab Pages, `.gitlab-ci.yml`) runs serverless.** Each visitor brings their own key, or uses the demo pack; claims live in their browser only. Nothing is shared between visitors and no key is ever hosted.
+- **Static hosting (GitHub Pages from `main`, or GitLab Pages via `.gitlab-ci.yml`) runs serverless.** Each visitor brings their own key, or uses the demo pack; claims live in their browser only. Nothing is shared between visitors and no key is ever hosted.
 - Keep `.env` files outside the served folder; the static server would serve them.
 
 ## Prototype limits (production next steps)
