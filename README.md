@@ -4,15 +4,29 @@
 
 AI Innovation Lab Season 2, Round 2. **Track: Case 1, "Expense & Reimbursement Agent".**
 
-Drop & Done is an AI-native reimbursement assistant. An employee drops a messy pile of bills into a chat: hotel invoices, e-tickets, cab app receipts, a faded café bill, a WhatsApp photo, a handwritten auto slip, a UPI screenshot. The assistant reads each one with Claude vision, groups them into trips, checks them against company policy, asks at most three questions, and produces a submission-ready claim. The approver gets a short summary that lists only what needs attention, each item with its policy clause and evidence.
+Drop & Done is an AI-native reimbursement assistant. An employee drops a messy pile of bills into a chat: hotel invoices, e-tickets, cab app receipts, a faded café bill, a WhatsApp photo, a handwritten auto slip, a UPI screenshot. The assistant reads each one with AI vision, groups them into trips, checks them against company policy, asks at most three questions, and produces a submission-ready claim. The approver gets a short summary that lists only what needs attention, each item with its policy clause and evidence.
 
-**AI reads, rules decide.** Claude only extracts fields, a confidence per field and tamper signals. Every policy decision is made by deterministic, unit-tested code, so each outcome is explainable.
+**AI reads, rules decide.** The AI only extracts fields, a confidence per field and tamper signals. Every policy decision is made by deterministic, unit-tested code, so each outcome is explainable.
 
-- **Demo video:** TODO: add YouTube link
-- **Repository:** TODO: add GitHub link
+- **Demo video:** [youtube.com/watch?v=DfA2MaytHfc](https://www.youtube.com/watch?v=DfA2MaytHfc)
+- **Repository:** [gitlab.com/supriya-group4/innovation-lab](https://gitlab.com/supriya-group4/innovation-lab)
 - **Design document:** [docs/DESIGN.md](docs/DESIGN.md) (architecture diagrams, setup and deployment, code walkthrough, assumptions, limits, testing)
 - **Specification:** [docs/SPEC.md](docs/SPEC.md)
 - **Pitch deck:** [02-pitch-deck/pitch-deck.html](02-pitch-deck/pitch-deck.html) (also served by the app)
+
+[![Drop & Done demo video](https://img.youtube.com/vi/DfA2MaytHfc/maxresdefault.jpg)](https://www.youtube.com/watch?v=DfA2MaytHfc)
+
+## Architecture
+
+**How it works.** Five steps: you drop, the AI reads, rules decide, people sign off.
+
+![Drop & Done: how it works](01-architecture/architecture-diagram.png)
+
+**Technical view.** Browser modules, the `engine.js` pipeline, the local server's routes, the claim lifecycle and the tests.
+
+![Drop & Done: technical architecture](01-architecture/architecture-technical.png)
+
+Vector versions: [overview SVG](01-architecture/architecture-diagram.svg) · [technical SVG](01-architecture/architecture-technical.svg)
 
 ## What it does
 
@@ -42,7 +56,7 @@ sh run.sh          # macOS / Linux / Git Bash
 Open **http://localhost:8787/**, click **Try the sample pack** and follow the [3-minute demo script](03-prototype/README.md#3-minute-demo-script).
 
 - **Demo mode** (default, no key needed): the sample pack uses pre-computed extraction; everything else runs for real.
-- **Live mode:** set `ANTHROPIC_API_KEY` in the environment before starting, and your own photos and PDFs are read by Claude vision. The key stays on the local server and is never sent to the browser.
+- **Live mode:** set `ANTHROPIC_API_KEY` in the environment before starting, and your own photos and PDFs are read live by the AI. The key stays on the local server and is never sent to the browser.
 - **Live mode with a Gemini key:** also needs Python 3.8+. Set `GEMINI_API_KEY`, then run `run-gemini.bat` (Windows) or `sh run-gemini.sh`. Bills are read by gemini-3.5-flash-lite through a small local bridge (`server/gemini_bridge.py`); set `GEMINI_MODEL` to change the model. The key stays in that local process.
 
 The server listens on `127.0.0.1` only. Do not host it with a key; see [Deployment](docs/DESIGN.md#33-deployment).
@@ -57,7 +71,7 @@ node --test --experimental-test-coverage     # with line coverage
 node tests/smoke.js                          # API smoke test against a running server
 ```
 
-The suite covers the policy rules, GSTIN checksum, duplicates, arithmetic, grouping, the question planner, the approver summary, the Claude client (with a stubbed `fetch`), the extraction schema, the full sample pack end to end, and a golden set with a gate that fails if any rule the engine can raise has no test. Line coverage of `engine.js`, `policy.js` and `ai.js` is 100%. Details: [docs/DESIGN.md, section 7](docs/DESIGN.md#7-testing).
+The suite covers the policy rules, GSTIN checksum, duplicates, arithmetic, grouping, the question planner, the approver summary, the AI client (with a stubbed `fetch`), the extraction schema, the full sample pack end to end, and a golden set with a gate that fails if any rule the engine can raise has no test. Line coverage of `engine.js`, `policy.js` and `ai.js` is 100%. Details: [docs/DESIGN.md, section 7](docs/DESIGN.md#7-testing).
 
 ## Repository layout
 
@@ -65,11 +79,11 @@ The suite covers the policy rules, GSTIN checksum, duplicates, arithmetic, group
 README.md               this file
 docs/DESIGN.md          technical design document
 docs/SPEC.md            product and technical specification (versions in docs/versions/)
-01-architecture/        architecture diagram (SVG)
+01-architecture/        architecture diagrams: overview and technical (SVG + PNG)
 02-pitch-deck/          pitch deck (HTML)
 03-prototype/
   app/                  browser app: app.js, engine.js, policy.js, ai.js, samples.js
-  server/               DropDoneServer.java (static files, Claude proxy, mock finance API),
+  server/               DropDoneServer.java (static files, AI proxy, mock finance API),
                         gemini_bridge.py (lets a Gemini key drive the same proxy)
   run.bat, run.sh       launchers; run-gemini.bat / run-gemini.sh for a Gemini key
 tests/                  unit, integration, golden (tests/golden/*.json) and smoke tests
