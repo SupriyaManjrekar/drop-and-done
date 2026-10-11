@@ -87,8 +87,8 @@ A static version of this diagram is in [`01-architecture/architecture-diagram.sv
 ### 2.2 Design principles
 1. **AI reads, rules decide.** The model only extracts fields, confidences and integrity signals. Every policy outcome comes from deterministic code in `engine.js`, so each decision is explainable (it carries a policy clause) and unit-testable. Policy decisions are never put in the prompt.
 2. **Evaluation is deterministic and idempotent** for a given `(lines, answers, ctx)`. `evaluate()` writes computed fields onto the lines but recomputes them from scratch each time, so every user answer simply re-runs it. `ctx.today` can be injected; the app pins it to 30 Sep 2026 for the sample pack, and the tests do the same.
-3. **The key never reaches the browser.** The server proxies Claude calls, adds the key from the `ANTHROPIC_API_KEY` environment variable, and binds to localhost only.
-4. **Two modes.** Demo mode replays pre-computed extractions for the sample pack, so the demo is reliable offline. Live mode sends each file to Claude vision.
+3. **Our key never reaches the browser.** With the server, it proxies the AI calls, adds the key from the `ANTHROPIC_API_KEY` environment variable, and binds to localhost only. On static hosting there is no shared key: each visitor brings their own, which stays in their browser and goes only to the AI provider (section 3.4).
+4. **Two modes.** Demo mode replays pre-computed extractions for the sample pack, so the demo is reliable offline. Live mode sends each file to the AI vision model.
 5. **Trust assumption (prototype).** Flags, totals and the summary are computed in the employee's browser and stored by the server as submitted. The server validates the shape of the claim but does not re-run the policy engine, and duplicate history is read back by the browser. In production `engine.js` would run on the server too (section 8).
 
 ### 2.3 End-to-end flow
@@ -217,9 +217,22 @@ node tests/smoke.js                          # server API smoke test (start the 
 ### 3.3 Deployment
 - **Supported deployment: local only.** The server binds to `127.0.0.1`. This is deliberate: `/api/claude` has no authentication, so exposing it would let anyone spend the API key.
 - **Never host it with a key.** If a hosted link is wanted, host demo mode only and label it as such.
-- **Static hosting** (for example GitHub Pages serving the repository) runs the browser app in demo mode only: there is no `/api/claims`, so submitting, the approver inbox and the cross-claim check do not work, and live extraction is off.
+- **Static hosting** (GitLab Pages through `.gitlab-ci.yml`, or any static server) runs the app serverless, as in section 3.4.
 - **Keep the folder layout.** The launchers serve the folder above `03-prototype`; the server redirects `/` to `/03-prototype/app/` and the app links to `/02-pitch-deck/`. Moving `app/` or `server/` needs the serve root, the redirect and the deck link changed together.
 - Keep any `.env` file outside the served folder; the static file handler would serve it.
+
+### 3.4 Serverless mode (static hosting, bring your own key)
+`app.js` calls `GET /api/config` at start. If the answer is not JSON (a 404 page on a static host) or the request fails, the app runs serverless:
+
+| Concern | With the Java server | Serverless |
+|---|---|---|
+| AI reads | `ai.js` → `/api/claude` → AI API, server's key | `ai.js` → Gemini `generateContent` straight from the browser, visitor's key in the `x-goog-api-key` header |
+| Request format | Messages format | Same Messages request, translated in `ai.js` (`toGemini`, `toGeminiSchema`, `fromGemini`), the same translation as `server/gemini_bridge.py` |
+| Claims | `/api/claims` in server memory | `store.js` in localStorage: same validation, `RCL-2026-` ids, transitions and 400 / 404 / 409 errors |
+| Key storage | environment variable | sessionStorage (this tab), or localStorage if the visitor ticks *Remember*; *Forget key* clears both |
+| Start screen | none | how to get a free key in Google AI Studio, *Use my key* (checked with a metadata call that spends no tokens) or *Try the demo pack without a key* |
+
+Rate limits on free keys: a 429 waits for the `retryDelay` the API sends (at most 60 s, three times); 5xx errors are retried twice; other errors show the API's message on the bill. Because the key sits in the visitor's browser, the start screen tells them to use a free key they can delete, restrict it to the Generative Language API and the site's address, and not to upload real bills on the free tier. Claims are per browser, so the cross-claim duplicate check only sees claims made in that browser.
 
 ---
 
@@ -228,7 +241,8 @@ node tests/smoke.js                          # server API smoke test (start the 
 | File | Role |
 |---|---|
 | `03-prototype/app/policy.js` | Policy as data (`POLICY`), GSTIN mod-36 checksum, `validatePolicy()` |
-| `03-prototype/app/ai.js` | Extraction prompt, strict JSON schema, `aiExtract()` |
+| `03-prototype/app/ai.js` | Extraction prompt, strict JSON schema, `aiExtract()`; serverless Gemini adapter |
+| `03-prototype/app/store.js` | Serverless claim store in localStorage, same contract as the server's `/api/claims` |
 | `03-prototype/app/engine.js` | Claim intelligence: line building, validation, duplicates, policy checks, grouping, question planner, submission payload, approver summary |
 | `03-prototype/app/samples.js` | The 12 fictional bills, rendered to PNG in the browser, and their pre-computed extractions |
 | `03-prototype/app/app.js` | Chat flow, claim card, evidence view, approver inbox, demo date pinning |
@@ -327,10 +341,11 @@ The suite uses Node's built-in test runner, with no packages. `policy.js`, `engi
 | `tests/engine.test.js` | 50 | Thresholds (0.69 / 0.70 date, 0.59 / 0.60 amount), duplicates, prior claims, arithmetic and answers, 60 vs 61 days, hotel nights and tiers, meals and entertainment, GST credit, GSTIN, ₹500 vs ₹501, flight class, cab cap, currencies, status priority, idempotence, grouping, question order and options, HTML escaping, totals, submission, copilot risk levels |
 | `tests/ai.test.js` | 12 | `aiExtract` with a stubbed `fetch` (request shape, image vs PDF, refusal, `max_tokens`, HTTP errors, invalid JSON); schema strictness; the 12 sample extractions validate against the schema |
 | `tests/integration.test.js` | 7 | The sample pack end to end: ₹28,347 / ₹27,847 / ₹26,047, 1 duplicate, ₹900 alcohol, ₹1,392 GST lost, 2 trips, the 4th question after "printed", the copilot summary, 10 of 12 `prior_claim` on a re-run |
+| `tests/static.test.js` | 24 | Serverless mode: Gemini schema and request translation, key in a header and never in the URL, 5xx retries, 429 waits capped at a minute, key check; the localStorage claim store (ids, transitions, 400 / 404 / 409, validation, reload, corrupt storage) |
 | `tests/golden.test.js` + `tests/golden/*.json` | 37 | 35 golden cases (synthetic bill, answers, expected status, claimable and flag codes) and a **risk-coverage gate** that fails if any flag code `engine.js` can emit has no golden case |
 | `tests/smoke.js` | 13 checks | Against a running server: config, redirect, static files, path traversal, claim validation, submit and list, every allowed and refused decision, proxy without a key |
 
-Last run: **120 tests passing**, line coverage 100% of `engine.js`, `policy.js` and `ai.js`; smoke test 13 of 13. The browser UI (`app.js`) is tested by hand with the demo script in `03-prototype/README.md`.
+Last run: **144 tests passing**, line coverage 100% of `engine.js`, `policy.js`, `ai.js` and `store.js`; smoke test 13 of 13. The browser UI (`app.js`) is tested by hand with the demo script in `03-prototype/README.md`, and the serverless build end to end in a browser with a real key (12 bills read live, 3 questions, submit, approve, paid, reload, forget key, and the no-key demo path).
 
 ---
 
@@ -357,4 +372,5 @@ Inspired by, not dependencies; found through search results and not licence-chec
 - No real employee, customer or company data anywhere in the repository.
 - `ANTHROPIC_API_KEY` is read from the environment only and never sent to the browser. `.env`, build output and local agent settings are in `.gitignore`.
 - The server listens on `127.0.0.1` only.
+- Serverless mode hosts no key. A visitor's own key stays in their browser (sessionStorage unless they choose localStorage), is sent only to Google's API in a request header, and is never put in a URL or logged.
 - The static file handler refuses paths outside the served folder.

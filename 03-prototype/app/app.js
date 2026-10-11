@@ -12,6 +12,7 @@ const S = {
   asked: 0, qTotal: 0, qLabel: null, pendingQ: null, startedAt: null, readyAt: null, readyAnnounced: false,
   processing: false, progress: null, submitting: false, submitted: null, priorKeys: {}, seq: 0,
   today: null, fallbackUsed: false,
+  store: null, aiKey: null, // static hosting: claims in this browser, the AI read with the user's own key
 };
 
 // ------------------------------------------------------------------ icons + small view helpers
@@ -35,7 +36,7 @@ const isoDay = (d) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2,
 const longDay = (d) => d.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
 const plural = (n, one, many = one + 's') => `${n} ${n === 1 ? one : many}`;
 const SOURCE = {
-  claude: { cls: 'src-live', icon: 'sparkle', label: 'Read by AI (live)' },
+  live: { cls: 'src-live', icon: 'sparkle', label: 'Read by AI (live)' },
   demo: { cls: 'src-demo', icon: 'package', label: 'Pre-computed demo extraction' },
   fallback: { cls: 'src-fail', icon: 'alert', label: 'Live call failed: showing pre-computed data' },
 };
@@ -85,7 +86,7 @@ const alertBox = (level, icon, html) => `<div class="alert ${level}">${ic(icon)}
 async function init() {
   const E = POLICY.employee;
   $('#who').textContent = `${E.name} · ${E.grade} · ${E.costCentre}`;
-  try { S.aiEnabled = (await (await fetch('/api/config')).json()).aiEnabled; } catch { S.aiEnabled = false; }
+  await detectBackend();
   updateMode();
   updateAsOf();
   await refreshPriorClaims();
@@ -93,6 +94,96 @@ async function init() {
   welcome();
   wireInputs();
   setTimeout(prewarmSamples, 300);
+  if (S.store && !S.aiKey) openKeySheet();
+}
+
+// With the Java server, /api/config answers JSON. Anywhere else (GitLab Pages, any static host) the app
+// runs serverless: claims are kept in this browser and the AI is called with the user's own key.
+async function detectBackend() {
+  try {
+    const res = await fetch('/api/config');
+    if (res.ok && /json/.test(res.headers.get('content-type') || '')) { S.aiEnabled = !!(await res.json()).aiEnabled; return; }
+  } catch { /* no server */ }
+  S.store = createClaimStore(localStorage);
+  S.aiKey = KEY.load();
+  S.aiEnabled = !!S.aiKey;
+  $('#keyBtn').hidden = false;
+  updateKeyBtn();
+}
+
+// The user's key: this tab only (sessionStorage) unless they tick "remember" (localStorage).
+const KEY_SLOT = 'dropdone.aiKey';
+const KEY = {
+  load() { try { return sessionStorage.getItem(KEY_SLOT) || localStorage.getItem(KEY_SLOT) || null; } catch { return null; } },
+  remembered() { try { return !!localStorage.getItem(KEY_SLOT); } catch { return false; } },
+  save(k, remember) {
+    try { sessionStorage.setItem(KEY_SLOT, k); remember ? localStorage.setItem(KEY_SLOT, k) : localStorage.removeItem(KEY_SLOT); } catch { /* storage blocked: key lives in memory only */ }
+  },
+  forget() { try { sessionStorage.removeItem(KEY_SLOT); localStorage.removeItem(KEY_SLOT); } catch { /* nothing stored */ } },
+};
+const AI_KEY_URL = 'https://aistudio.google.com/apikey';
+
+function updateKeyBtn() {
+  const b = $('#keyBtn');
+  b.innerHTML = `${ic(S.aiKey ? 'shield' : 'sparkle')}<span>${S.aiKey ? 'AI key' : 'Add AI key'}</span>`;
+  b.title = S.aiKey ? `Your key is kept ${KEY.remembered() ? 'on this device' : 'in this tab only'}. Click to change or forget it.` : 'Add a free AI key to read your own bills live';
+}
+
+function setKey(k, remember) {
+  S.aiKey = k || null;
+  if (k) KEY.save(k, remember); else KEY.forget();
+  S.aiEnabled = !!k;
+  S.fallbackUsed = false;
+  updateMode(); updateKeyBtn(); updateAsOf();
+}
+
+// The start page for static hosting: how to get a free key, or skip straight to the demo pack.
+function openKeySheet() {
+  const has = !!S.aiKey;
+  lastFocus = document.activeElement;
+  const sheet = $('#sheet');
+  sheet.className = 'sheet keysheet';
+  sheet.innerHTML = `<div class="info">
+    <div class="ev-top"><h2 id="evTitle">${has ? 'Your AI key' : 'Read your bills live, right in this browser'}</h2><button type="button" class="close" id="evClose" aria-label="Close">${ic('x')}</button></div>
+    <p class="k-lead">This copy of Drop &amp; Done runs without a server. Bring a free AI key and every bill is read live. Or skip it: the 12-bill demo pack works without one.</p>
+    <ol class="k-steps">
+      <li><span class="k-n">1</span><span>Open <a href="${AI_KEY_URL}" target="_blank" rel="noopener noreferrer">Google AI Studio</a>, sign in, and click <b>Create API key</b>. The free tier is enough for this demo.</span></li>
+      <li><span class="k-n">2</span><span>Paste the key here.</span></li>
+    </ol>
+    <form id="keyForm" class="k-form" autocomplete="off">
+      <label for="keyIn" class="vh">AI API key</label>
+      <input id="keyIn" type="password" spellcheck="false" placeholder="${has ? 'Key saved. Paste a new one to replace it' : 'Paste your API key'}" aria-describedby="keyMsg">
+      <label class="k-rem"><input type="checkbox" id="keyRem" ${KEY.remembered() ? 'checked' : ''}> Remember on this device</label>
+      <p id="keyMsg" class="k-msg" role="status"></p>
+      <div class="k-btns">
+        <button type="submit" class="btn primary" id="keyUse">${ic('sparkle')}Use my key</button>
+        ${has ? `<button type="button" class="btn no" id="keyForget">${ic('x')}Forget key</button>` : `<button type="button" class="btn" id="keyDemo">${ic('package')}Try the demo pack without a key</button>`}
+      </div>
+    </form>
+    <div class="k-safe">${ic('shield')}<div><b>Where your key goes.</b> It stays in this browser (this tab only, unless you tick <i>Remember</i>) and is sent only to Google's API, never to us. Use a free key you can delete, and in Google Cloud restrict it to the Generative Language API and to this site's address. Free-tier requests may be used to improve Google's products, so try it with the demo pack or test bills, not real ones.</div></div>
+  </div>`;
+  $('#modal').hidden = false;
+  $('#evClose').onclick = closeModal;
+  $('#keyDemo')?.addEventListener('click', () => { closeModal(); useSamples(); });
+  $('#keyForget')?.addEventListener('click', () => {
+    setKey(null);
+    closeModal();
+    botSays(`Key forgotten and removed from this browser. You're in demo mode: the sample pack still works.`);
+  });
+  $('#keyForm').onsubmit = async (e) => {
+    e.preventDefault();
+    const k = $('#keyIn').value.trim();
+    const msg = $('#keyMsg');
+    if (!k) { msg.className = 'k-msg err'; msg.textContent = has ? 'Paste a new key, or close this to keep the current one.' : 'Paste a key first, or try the demo pack.'; return; }
+    const btn = $('#keyUse');
+    btn.disabled = true; msg.className = 'k-msg'; msg.textContent = 'Checking the key…';
+    try { await checkGeminiKey(k); }
+    catch (err) { btn.disabled = false; msg.className = 'k-msg err'; msg.textContent = `That key didn't work: ${err.message}`; return; }
+    setKey(k, $('#keyRem').checked);
+    closeModal();
+    botSays(`${ic('sparkle', 'good')} Live AI is on. Drop your bills, or try the sample pack: every bill is now read live.`);
+  };
+  (has ? $('#keyUse') : $('#keyIn')).focus();
 }
 
 function updateMode() {
@@ -105,7 +196,7 @@ function updateMode() {
     warn: `${ic('alert')}Live AI · fallback used`,
   }[state];
   m.title = {
-    demo: 'The sample pack replays pre-computed extraction. Enable live AI on the server to read your own bills.',
+    demo: `The sample pack replays pre-computed extraction. ${S.store ? 'Add your AI key' : 'Enable live AI on the server'} to read your own bills.`,
     live: 'Bills are read by AI in real time',
     warn: 'At least one live call failed and pre-computed sample data was used instead. See the chat for details.',
   }[state];
@@ -125,11 +216,12 @@ function welcome() {
   const first = POLICY.employee.name.split(' ')[0];
   const el = addMsg(`<p>Hi ${esc(first)}, I'm your reimbursement assistant.</p>
     <p>Drop all your bills here in one go: photos, PDFs, UPI screenshots, even handwritten slips. I'll read them, group them into trips, check policy and get a claim <b>ready to submit</b>. I'll only ask what I can't work out myself.</p>
-    ${S.aiEnabled ? '' : alertBox('note', 'package', `<b>Demo mode.</b> The sample pack uses pre-computed extraction, and today is pinned to ${longDay(DEMO_TODAY)} so the sample dates stay valid. Enable live AI on the server to read your own bills.`)}
+    ${S.aiEnabled ? '' : alertBox('note', 'package', `<b>Demo mode.</b> The sample pack uses pre-computed extraction, and today is pinned to ${longDay(DEMO_TODAY)} so the sample dates stay valid. ${S.store ? 'Add a free AI key (top right) to read your own bills live.' : 'Enable live AI on the server to read your own bills.'}`)}
     <p class="hint">You can also type <b>policy</b>, <b>status</b>, <b>submit</b> or <b>start over</b> at any time.</p>`);
   withOptions(el, [
     { label: 'Try the sample pack (12 bills, 2 trips)', icon: 'package', primary: true, keep: true, run: useSamples },
     { label: 'Upload my bills', icon: 'clip', keep: true, run: () => $('#fileInput').click() },
+    ...(S.store ? [{ label: 'Add my AI key', icon: 'sparkle', keep: true, run: openKeySheet }] : []),
   ]);
 }
 
@@ -172,6 +264,7 @@ function wireInputs() {
     };
   });
   $('#modal').onclick = (e) => { if (e.target.id === 'modal') closeModal(); };
+  $('#keyBtn').onclick = openKeySheet;
   addEventListener('keydown', (e) => {
     if ($('#modal').hidden) return;
     if (e.key === 'Escape') closeModal();
@@ -223,11 +316,11 @@ async function prepDoc(file) {
 async function extract(doc) {
   if (S.aiEnabled) {
     if (!doc.base64) doc.base64 = await downscale(doc.file);
-    try { return { x: await aiExtract(doc), via: 'claude' }; }
+    try { return { x: await aiExtract(doc, { geminiKey: S.aiKey }), via: 'live' }; }
     catch (e) { if (doc.sample) return { x: doc.sample, via: 'fallback', err: e.message }; throw e; }
   }
   if (doc.sample) { await sleep(350 + Math.random() * 900); return { x: doc.sample, via: 'demo' }; }
-  throw new Error('Live AI is off, so only the sample pack can be read. Enable live AI on the server to read your own bills.');
+  throw new Error(`Live AI is off, so only the sample pack can be read. ${S.store ? 'Add your AI key (top right)' : 'Enable live AI on the server'} to read your own bills.`);
 }
 
 async function pool(items, n, fn) {
@@ -286,7 +379,7 @@ async function handleFiles(files) {
   if (fallbacks.length) {
     S.fallbackUsed = true;
     updateMode();
-    await botSays(alertBox('risk', 'alert', `<b>Live AI failed on ${fallbacks.length} of ${plural(files.length, 'file')}.</b> I used the pre-computed sample data for ${fallbacks.length === 1 ? 'it' : 'them'} instead, so ${fallbacks.length === 1 ? 'that line was' : 'those lines were'} <b>not</b> read live by the AI. They are tagged <i>pre-computed</i> in the claim card.<ul>${fallbacks.map((f) => `<li>${esc(f)}</li>`).join('')}</ul>Check the server window and the API key, then drop the files again for a live read.`));
+    await botSays(alertBox('risk', 'alert', `<b>Live AI failed on ${fallbacks.length} of ${plural(files.length, 'file')}.</b> I used the pre-computed sample data for ${fallbacks.length === 1 ? 'it' : 'them'} instead, so ${fallbacks.length === 1 ? 'that line was' : 'those lines were'} <b>not</b> read live by the AI. They are tagged <i>pre-computed</i> in the claim card.<ul>${fallbacks.map((f) => `<li>${esc(f)}</li>`).join('')}</ul>${S.store ? 'Check your AI key and its quota' : 'Check the server window and the API key'}, then drop the files again for a live read.`));
   }
   if (S.lines.length) { await summarise(); askNext(); }
 }
@@ -461,20 +554,29 @@ async function draftGstEmail(l) {
 }
 
 // ------------------------------------------------------------------ submit to mock finance system
+// The Java server's /api/claims, or the same contract in this browser (store.js) on static hosting.
+const api = {
+  async list() { return S.store ? S.store.list() : (await fetch('/api/claims')).json(); },
+  async submit(claim) { return S.store ? S.store.submit(claim) : post('/api/claims', claim); },
+  async decide(id, decision) { return S.store ? S.store.decide(id, decision) : post(`/api/claims/${id}/decision`, { decision }); },
+};
+async function post(url, body) {
+  const res = await fetch(url, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body) });
+  if (!res.ok) throw new Error('HTTP ' + res.status);
+  return res.json();
+}
 async function submitClaim() {
   if (S.submitted || S.submitting || !S.view.totals?.ready) return;
   S.submitting = true; renderClaim();
   const t = S.view.totals;
-  const metrics = { filesProcessed: S.lines.length, questionsAsked: S.asked, timeToReadySec: Math.round(((S.readyAt || Date.now()) - S.startedAt) / 1000), extraction: S.aiEnabled ? 'claude-live' : 'demo' };
+  const metrics = { filesProcessed: S.lines.length, questionsAsked: S.asked, timeToReadySec: Math.round(((S.readyAt || Date.now()) - S.startedAt) / 1000), extraction: S.aiEnabled ? 'ai-live' : 'demo' };
   const payload = buildSubmission(S.lines, S.view.groups, t, metrics);
   payload.copilot = copilotSummary(payload);
   try {
-    const res = await fetch('/api/claims', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(payload) });
-    if (!res.ok) throw new Error('HTTP ' + res.status);
-    S.submitted = await res.json();
+    S.submitted = await api.submit(payload);
   } catch (e) {
     S.submitting = false; renderClaim();
-    return botSays(alertBox('risk', 'alert', `Couldn't reach the reimbursement system (${esc(e.message)}). Nothing was lost: your claim is still here. Check that the server window is open, then press <b>Submit</b> again.`));
+    return botSays(alertBox('risk', 'alert', `Couldn't reach the reimbursement system (${esc(e.message)}). Nothing was lost: your claim is still here. ${S.store ? 'Check that this browser allows site storage' : 'Check that the server window is open'}, then press <b>Submit</b> again.`));
   }
   S.submitting = false;
   addMsg('Submit claim', 'me');
@@ -508,7 +610,7 @@ async function reopenClaim() {
 
 async function refreshPriorClaims() {
   try {
-    const list = await (await fetch('/api/claims')).json();
+    const list = await api.list();
     S.priorKeys = {};
     for (const c of list) {
       if (c.status === 'REJECTED') continue; // sent back: not a live claim, so its bills may be claimed again
@@ -603,7 +705,7 @@ function lineHtml(l) {
     else if (l.isReceipt) acts.push(`<button type="button" class="mini" data-act="exclude" data-id="${l.id}">${ic('ban')}Exclude</button>`);
     if (l.flags.some((f) => f.code === 'gst_lost')) acts.push(`<button type="button" class="mini" data-act="gst" data-id="${l.id}">${ic('mail')}Draft GST request</button>`);
   }
-  const src = l.via === 'fallback' ? `<span class="tag risk">${ic('alert')}pre-computed</span>` : l.via === 'claude' ? `<span class="tag live">${ic('sparkle')}live</span>` : '';
+  const src = l.via === 'fallback' ? `<span class="tag risk">${ic('alert')}pre-computed</span>` : l.via === 'live' ? `<span class="tag live">${ic('sparkle')}live</span>` : '';
   return `<div class="line ${l.status}" data-id="${l.id}">
     <div class="ic" ${thumb}>${l.previewUrl ? '' : ic(icon)}</div>
     <div class="main"><button type="button" class="v" aria-label="${esc(l.vendor || l.fileName)}: open the bill and its checks">${ic(icon, 'cat')}<span>${esc(l.vendor || l.fileName)}</span></button>
@@ -645,10 +747,11 @@ function openEvidence(id) {
   };
   const items = l.items.length ? `<h3>Line items</h3><table class="items">${l.items.map((i) => `<tr><td>${esc(i.description)}${i.is_alcohol ? ` <span class="tag warn">${ic('glass')}alcohol</span>` : ''}</td><td class="num">${inr(i.amount)}</td></tr>`).join('')}</table>` : '';
   const src = SOURCE[l.via] || SOURCE.demo;
-  const srcNote = l.via === 'claude' ? `AI extraction · strict JSON with a confidence per field`
+  const srcNote = l.via === 'live' ? `AI extraction · strict JSON with a confidence per field`
     : l.via === 'fallback' ? `This is not a live read. Error: ${esc(l.viaErr || 'unknown')}`
     : 'Same JSON shape the live model returns. The policy checks below run for real.';
   lastFocus = document.activeElement;
+  $('#sheet').className = 'sheet';
   $('#sheet').innerHTML = `
     <div class="pv">${l.previewUrl ? `<img src="${l.previewUrl}" alt="The bill as uploaded: ${esc(l.fileName)}">` : `<div class="pv-file">${ic('file')}<span>${esc(l.fileName)}</span></div>`}</div>
     <div class="info">
@@ -705,13 +808,13 @@ function switchView(v) {
   if (v === 'approver') renderApprover();
 }
 
-const EXTRACTION_LABEL = { 'claude-live': 'AI (live)', demo: 'pre-computed demo' };
+const EXTRACTION_LABEL = { 'ai-live': 'AI (live)', 'claude-live': 'AI (live)', demo: 'pre-computed demo' };
 
 async function renderApprover() {
   const box = $('#apprList');
   const all = await refreshPriorClaims();
   if (all === null) {
-    box.innerHTML = `<div class="acard state">${ic('alert')}<p><b>Can't reach the mock reimbursement system.</b> Check that the server window (run.bat) is still open, then reload.</p><button type="button" class="btn" id="apprRetry">${ic('refresh')}Try again</button></div>`;
+    box.innerHTML = `<div class="acard state">${ic('alert')}<p><b>Can't reach the mock reimbursement system.</b> ${S.store ? 'This browser blocked site storage. Allow it for this site, then reload.' : 'Check that the server window (run.bat) is still open, then reload.'}</p><button type="button" class="btn" id="apprRetry">${ic('refresh')}Try again</button></div>`;
     $('#apprRetry').onclick = renderApprover;
     return;
   }
@@ -758,9 +861,7 @@ async function decide(id, d, btn) {
   btns.forEach((b) => (b.disabled = true));
   let c;
   try {
-    const res = await fetch(`/api/claims/${id}/decision`, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ decision: d }) });
-    if (!res.ok) throw new Error('HTTP ' + res.status);
-    c = await res.json();
+    c = await api.decide(id, d);
   } catch (e) {
     btns.forEach((b) => (b.disabled = false));
     if (card) card.querySelector('.a-err').textContent = `Couldn't record the decision (${e.message}). Check the server and try again.`;

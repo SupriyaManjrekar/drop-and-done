@@ -23,6 +23,8 @@ Then open **http://localhost:8787/** (set `PORT` to use another port). The pitch
 
 The API key stays on the local Java server, which forwards requests to Claude. The browser never sees it. The server listens on 127.0.0.1 only, and it uses the Windows trust store and system proxy, so it works behind a corporate proxy. Requests opt into server-side `fallbacks: "default"`: if a safety classifier declines, the request is re-run on a recommended model instead of failing.
 
+**No server at all:** serve the repository root with any static file server (or use the GitLab Pages site built by `.gitlab-ci.yml`) and open `/03-prototype/app/`. The app notices there is no `/api/config` and runs serverless: a start screen asks for a free Gemini key from [Google AI Studio](https://aistudio.google.com/apikey) or offers the demo pack, `ai.js` calls Gemini straight from the browser, and `store.js` keeps claims in localStorage with the same rules as the server. The key stays in sessionStorage (or localStorage with *Remember*) and goes only to Google's API.
+
 With a Gemini key, `run-gemini` starts `server/gemini_bridge.py` on 127.0.0.1:8788 (set `BRIDGE_PORT` to change it) and points the Java server at it through `ANTHROPIC_URL`. The bridge turns each extraction request into a Gemini call and the answer back, so the app itself is unchanged. The key stays in that process.
 
 ## 3-minute demo script
@@ -50,7 +52,8 @@ All businesses, people, bills and GSTINs in the sample pack are **synthetic**. T
 | File | Role |
 |---|---|
 | `server/DropDoneServer.java` | Static hosting, Claude proxy (`/api/claude`), mock finance API (`/api/claims`, `/api/claims/{id}/decision`) |
-| `app/ai.js` | Extraction prompt and JSON schema (value + confidence per field, integrity signals) |
+| `app/ai.js` | Extraction prompt and JSON schema (value + confidence per field, integrity signals); server proxy or, serverless, a direct Gemini call with the user's key |
+| `app/store.js` | Serverless only: the mock reimbursement system in localStorage, same validation, ids and transitions as the server |
 | `app/policy.js` | Policy as code: caps, clauses, GSTIN checksum |
 | `app/engine.js` | Claim intelligence: validation, 3-level duplicates, grouping, policy, line state machine, question planner, approver copilot |
 | `app/app.js` | Chat flow, live claim card, evidence view, approver inbox |
@@ -77,16 +80,17 @@ Run `node --test` with no path: on Node 22+ `node --test tests/` is read as a fi
 | `tests/engine.test.js` | Auto-fill thresholds (date 0.7, amount 0.6), duplicates and prior claims, arithmetic and its answers, date window, hotel caps, meals / alcohol / client entertainment, GST credit, GSTIN, UPI ₹500 limit, flight class, cab cap, currency, status priority, grouping, question planner, totals, submission, copilot summary, HTML escaping |
 | `tests/ai.test.js` | `aiExtract` with a stubbed `fetch` (request shape, image vs PDF block, refusal, `max_tokens`, HTTP errors, bad JSON) and the strict JSON schema; the 12 sample extractions validate against it |
 | `tests/integration.test.js` | The 12-bill sample pack end to end: ₹28,347 before answers, ₹27,847 and 2 trips on the scripted path, ₹26,047 for "solo", 1 duplicate, ₹900 alcohol, ₹1,392 GST lost, the 4th question after "printed", the copilot summary, 10 of 12 `prior_claim` on a re-run |
+| `tests/static.test.js` | Serverless mode: schema and request translation for Gemini, the key sent in a header and never in the URL, 5xx retries, 429 waits, key check; the localStorage claim store (ids, transitions, 409/400/404, validation, reload, corrupt storage) |
 | `tests/golden.test.js` + `tests/golden/*.json` | Synthetic bills with answers and expected status / claimable / flag codes; a coverage gate fails if any flag code in `engine.js` has no golden case |
 | `tests/smoke.js` | Running server: config, redirect, static files, claim validation (400), submit and list, decision transitions (200 / 409), proxy without a key (503). Prints SKIP if no server is running |
 
-Tests inject `today` = 30 Sep 2026 at local midnight, so they do not depend on the real date. Last run: 120 tests passing; line coverage 100% of `engine.js`, `policy.js` and `ai.js`.
+Tests inject `today` = 30 Sep 2026 at local midnight, so they do not depend on the real date. Last run: 144 tests passing; line coverage 100% of `engine.js`, `policy.js`, `ai.js` and `store.js`.
 
 ## Deployment
 
 - **Supported: run it locally.** The server binds to `127.0.0.1` only, so nothing is exposed to the network. Keep the folder layout as it is: the launchers serve the folder above `03-prototype`, `/` redirects to `/03-prototype/app/`, and the deck is served from `/02-pitch-deck/`.
 - **Never host it with an API key.** `/api/claude` has no authentication; anyone who can reach it can spend the key.
-- **Static hosting (for example GitHub Pages) runs demo mode only.** Without the Java server there is no `/api/claims`, so submitting, the approver inbox and cross-claim checks do not work, and live extraction is off. If you host it, say so next to the link.
+- **Static hosting (GitLab Pages, `.gitlab-ci.yml`) runs serverless.** Each visitor brings their own key, or uses the demo pack; claims live in their browser only. Nothing is shared between visitors and no key is ever hosted.
 - Keep `.env` files outside the served folder; the static server would serve them.
 
 ## Prototype limits (production next steps)

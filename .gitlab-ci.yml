@@ -1,0 +1,30 @@
+# GitLab Pages: publishes the browser app, the pitch deck and the diagrams as a static site.
+# There is no server there, so the app runs serverless: visitors bring their own free AI key
+# (kept in their browser) or use the demo pack, and claims are stored in their browser.
+# Site: https://<group>.gitlab.io/<project>/  ->  redirects to the app.
+
+stages: [test, deploy]
+
+test:
+  stage: test
+  image: node:22-alpine
+  script:
+    - node --test
+
+pages:
+  stage: deploy
+  image: alpine:3.20
+  script:
+    - mkdir -p public/03-prototype
+    - cp -r 01-architecture 02-pitch-deck public/
+    - cp -r 03-prototype/app public/03-prototype/
+    - |
+      cat > public/index.html <<'HTML'
+      <!doctype html><meta charset="utf-8"><title>Drop &amp; Done</title>
+      <meta http-equiv="refresh" content="0; url=03-prototype/app/">
+      <p><a href="03-prototype/app/">Open Drop &amp; Done</a></p>
+      HTML
+  artifacts:
+    paths: [public]
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH

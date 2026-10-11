@@ -61,17 +61,26 @@ Open **http://localhost:8787/**, click **Try the sample pack** and follow the [3
 
 The server listens on `127.0.0.1` only. Do not host it with a key; see [Deployment](docs/DESIGN.md#33-deployment).
 
+### Or run it in the browser, with no install
+
+The same app also runs as a static site with no server, published to **GitLab Pages** by [`.gitlab-ci.yml`](.gitlab-ci.yml) on every push to `main` (address under *Deploy > Pages* in GitLab). Any static file server works too, for example `python3 -m http.server` from this folder, then open `/03-prototype/app/`.
+
+- On first open, a start screen offers two paths: **Use my key** or **Try the demo pack without a key**.
+- **Your own key:** create a free Gemini API key in [Google AI Studio](https://aistudio.google.com/apikey) and paste it. Bills are then read live, straight from the browser to Google's API, on gemini-3.5-flash-lite. The key is kept in this tab only (sessionStorage), or on this device if you tick *Remember* (localStorage). **AI key > Forget key** removes it.
+- **Claims** are stored in the browser (localStorage) by a copy of the mock reimbursement system with the same rules as the server, so submit, approve, send back and mark paid all work.
+- Use a free key you can delete, and restrict it in Google Cloud to the Generative Language API and the site's address. Don't upload real bills with a free-tier key.
+
 ## Tests
 
 Prerequisite: **Node.js 20 or newer** (tests only; no `npm install`). From this folder:
 
 ```sh
-node --test                                  # 120 unit, integration and golden tests
+node --test                                  # 144 unit, integration and golden tests
 node --test --experimental-test-coverage     # with line coverage
 node tests/smoke.js                          # API smoke test against a running server
 ```
 
-The suite covers the policy rules, GSTIN checksum, duplicates, arithmetic, grouping, the question planner, the approver summary, the AI client (with a stubbed `fetch`), the extraction schema, the full sample pack end to end, and a golden set with a gate that fails if any rule the engine can raise has no test. Line coverage of `engine.js`, `policy.js` and `ai.js` is 100%. Details: [docs/DESIGN.md, section 7](docs/DESIGN.md#7-testing).
+The suite covers the policy rules, GSTIN checksum, duplicates, arithmetic, grouping, the question planner, the approver summary, the AI client (with a stubbed `fetch`), the extraction schema, the full sample pack end to end, and a golden set with a gate that fails if any rule the engine can raise has no test. Line coverage of `engine.js`, `policy.js`, `ai.js` and `store.js` is 100%. Details: [docs/DESIGN.md, section 7](docs/DESIGN.md#7-testing).
 
 ## Repository layout
 
@@ -82,11 +91,12 @@ docs/SPEC.md            product and technical specification (versions in docs/ve
 01-architecture/        architecture diagrams: overview and technical (SVG + PNG)
 02-pitch-deck/          pitch deck (HTML)
 03-prototype/
-  app/                  browser app: app.js, engine.js, policy.js, ai.js, samples.js
+  app/                  browser app: app.js, engine.js, policy.js, ai.js, store.js, samples.js
   server/               DropDoneServer.java (static files, AI proxy, mock finance API),
                         gemini_bridge.py (lets a Gemini key drive the same proxy)
   run.bat, run.sh       launchers; run-gemini.bat / run-gemini.sh for a Gemini key
 tests/                  unit, integration, golden (tests/golden/*.json) and smoke tests
+.gitlab-ci.yml          runs the tests, then publishes the static site to GitLab Pages
 ```
 
 ## Data and compliance

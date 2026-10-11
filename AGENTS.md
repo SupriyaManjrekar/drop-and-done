@@ -23,7 +23,8 @@ Update this section when work lands. Keep it to one line per item.
 - [x] Track chosen: Case 1, Expense & Reimbursement Agent
 - [x] Spec v0.3.0 (implemented; Opus-reviewed; code tasks in SPEC section 14)
 - [ ] Open questions 2 to 4 (live mode, GitHub account/visibility, hosting)
-- [x] Unit tests: 120 pass, 100% line coverage of engine/policy/ai; smoke 13/13
+- [x] Unit tests: 144 pass, 100% line coverage of engine/policy/ai/store; smoke 13/13
+- [x] Spec v0.4.0: serverless mode (bring-your-own key, localStorage claims), GitLab Pages CI; verified in a browser with a real key
 - [x] `docs/DESIGN.md`, root README, `.gitignore`
 - [ ] UI redesign verified in a browser (written blind; check console, run demo script)
 - [ ] Fix SPEC section 14 #11 (content-type check on POST, API-key abuse) and #15 (live run)

@@ -5,8 +5,8 @@ Items marked **[TBD]** need a decision from the team.
 
 | | |
 |---|---|
-| **Version** | 0.3.0 (implemented, awaiting browser click-through) |
-| **Date** | 2026-10-10 |
+| **Version** | 0.4.0 (implemented, verified in a browser) |
+| **Date** | 2026-10-11 |
 | **Status** | Tests, server fixes, docs and UI implemented. UI is unverified in a browser; see AGENTS.md status. Open questions 2 to 4 remain. |
 
 ### Versioning
@@ -21,6 +21,7 @@ Items marked **[TBD]** need a decision from the team.
 | 0.1.0 | 2026-10-10 | First draft: requirements, architecture, policy rules, AI design, test strategy, research-derived ideas, two-day plan. |
 | 0.2.0 | 2026-10-10 | Opus review against the code and email. Corrected: `prior_claim` vs `duplicate`, amount threshold 0.6, question cap location, decision values, summary is rule-generated, `evaluate` is idempotent not pure, FR-12 grouping, FR-15 lifecycle. Added: missing rule codes, existing features (FR-20), trust assumption, "Spec-vs-code tasks" (section 14), deployment and portability, test prerequisites, fixtures per code, date injection, revised plan. Dropped the ±1 day duplicate change. |
 | 0.2.1 | 2026-10-10 | Track resolved: Case 1, Expense & Reimbursement Agent, with brief coverage note; Q1 closed. |
+| 0.4.0 | 2026-10-11 | Serverless mode for static hosting (FR-21): start screen with a bring-your-own free Gemini key or the demo pack, browser-direct extraction in `ai.js`, the mock reimbursement system in localStorage (`store.js`), GitLab Pages job in `.gitlab-ci.yml`. Design principle 3 reworded: our key never reaches the browser; a visitor's own key may. 144 tests, 100% line coverage of engine/policy/ai/store; verified end to end in a browser with a real key. |
 | 0.3.0 | 2026-10-10 | Implementation. Tests (120, 100% line coverage of engine/policy/ai), guarded exports, `validatePolicy()`, `currency_unknown` flag, server JSON validation and decision transition table, PATH-based run scripts, `.gitignore`, `docs/DESIGN.md`, root README, UI redesign (pinned demo date, source label, fallback warning, send-back reopen flow). Test command corrected to `node --test` (Node 22+ treats `tests/` as a file). Q5 closed (Option A). Section 14 updated. |
 
 ---
@@ -72,7 +73,7 @@ Design principles:
 1. **AI reads, rules decide.** The model only extracts fields, confidences and integrity signals. Every policy outcome comes from deterministic code in `engine.js`, so it is explainable and testable.
 2. **Evaluation is deterministic and idempotent** for a given `(lines, answers, context)`. `evaluate()` mutates the lines (flags, status, claimable, billed) but recomputes them from scratch, so each user answer simply re-runs it. Tests must inject `ctx.today`.
 3a. **Trust assumption.** Flags, totals and the summary are computed in the employee's browser and stored by the server as submitted. The server never re-evaluates, and duplicate history is client-side. Production path: re-run `engine.js` server-side and keep claim history in the database.
-3. **The key never reaches the browser.** The server proxies Claude calls and binds to localhost only.
+3. **Our key never reaches the browser.** The server proxies the AI calls and binds to localhost only. In serverless mode (FR-21) there is no shared key; each visitor brings their own, kept in their browser.
 4. **Two modes.** Demo mode replays pre-computed extractions for the sample pack so the demo is reliable offline. Live mode sends every file to Claude vision.
 
 The server also serves `GET /api/config` (mode and key presence). The Windows trust store and proxy support are JVM flags set in `run.bat` / `run.sh`, not server logic.
@@ -116,6 +117,14 @@ Deliverable: the email asks for diagrams (plural). `01-architecture/architecture
 - FR-20 Draft GST invoice request email; line actions Not-a-duplicate, Exclude, Include again; typed commands (policy Q&A, submit, status, reset); live timer.
 
 ---
+
+### 3.7 Serverless mode (FR-21)
+- When `GET /api/config` does not return JSON (static hosting), the app runs without a server.
+- A start screen explains how to get a free Gemini API key in Google AI Studio, and offers **Use my key** (checked with a no-token metadata call) or **Try the demo pack without a key**. A header button reopens it to change or forget the key.
+- The key is stored in sessionStorage, or in localStorage if the visitor ticks *Remember on this device*. It is sent only to Google's API in the `x-goog-api-key` header, never in a URL.
+- `ai.js` sends the same extraction request, translated to Gemini `generateContent` (same translation as `server/gemini_bridge.py`). A 429 waits for the API's `retryDelay` (max 60 s, three times); 5xx is retried twice.
+- `store.js` implements `/api/claims` and `/api/claims/{id}/decision` in localStorage with the server's validation, ids, transitions and 400 / 404 / 409 errors. Claims are per browser.
+- `.gitlab-ci.yml` runs `node --test`, then publishes `01-architecture`, `02-pitch-deck` and `03-prototype/app` to GitLab Pages, with a root page that redirects to the app.
 
 ## 4. Data model
 
