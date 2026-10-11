@@ -35,7 +35,7 @@ const isoDay = (d) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2,
 const longDay = (d) => d.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
 const plural = (n, one, many = one + 's') => `${n} ${n === 1 ? one : many}`;
 const SOURCE = {
-  claude: { cls: 'src-live', icon: 'sparkle', label: 'Read by Claude vision (live)' },
+  claude: { cls: 'src-live', icon: 'sparkle', label: 'Read by AI (live)' },
   demo: { cls: 'src-demo', icon: 'package', label: 'Pre-computed demo extraction' },
   fallback: { cls: 'src-fail', icon: 'alert', label: 'Live call failed: showing pre-computed data' },
 };
@@ -101,11 +101,11 @@ function updateMode() {
   m.className = 'mode ' + state;
   m.innerHTML = {
     demo: `${ic('package')}Demo mode<span class="lg"> · pre-computed AI</span>`,
-    live: `${ic('sparkle')}Live AI<span class="lg"> · Claude vision</span>`,
+    live: `${ic('sparkle')}AI-powered<span class="lg"> · live</span>`,
     warn: `${ic('alert')}Live AI · fallback used`,
   }[state];
   m.title = {
-    demo: 'The sample pack replays pre-computed extraction. Set ANTHROPIC_API_KEY on the server to read your own bills live.',
+    demo: 'The sample pack replays pre-computed extraction. Enable live AI on the server to read your own bills.',
     live: `Bills are read by ${MODEL} in real time`,
     warn: 'At least one live call failed and pre-computed sample data was used instead. See the chat for details.',
   }[state];
@@ -125,7 +125,7 @@ function welcome() {
   const first = POLICY.employee.name.split(' ')[0];
   const el = addMsg(`<p>Hi ${esc(first)}, I'm your reimbursement assistant.</p>
     <p>Drop all your bills here in one go: photos, PDFs, UPI screenshots, even handwritten slips. I'll read them, group them into trips, check policy and get a claim <b>ready to submit</b>. I'll only ask what I can't work out myself.</p>
-    ${S.aiEnabled ? '' : alertBox('note', 'package', `<b>Demo mode.</b> The sample pack uses pre-computed extraction, and today is pinned to ${longDay(DEMO_TODAY)} so the sample dates stay valid. Start the server with <code>ANTHROPIC_API_KEY</code> set to read your own bills live with Claude.`)}
+    ${S.aiEnabled ? '' : alertBox('note', 'package', `<b>Demo mode.</b> The sample pack uses pre-computed extraction, and today is pinned to ${longDay(DEMO_TODAY)} so the sample dates stay valid. Enable live AI on the server to read your own bills.`)}
     <p class="hint">You can also type <b>policy</b>, <b>status</b>, <b>submit</b> or <b>start over</b> at any time.</p>`);
   withOptions(el, [
     { label: 'Try the sample pack (12 bills, 2 trips)', icon: 'package', primary: true, keep: true, run: useSamples },
@@ -227,7 +227,7 @@ async function extract(doc) {
     catch (e) { if (doc.sample) return { x: doc.sample, via: 'fallback', err: e.message }; throw e; }
   }
   if (doc.sample) { await sleep(350 + Math.random() * 900); return { x: doc.sample, via: 'demo' }; }
-  throw new Error('Live AI is off, so only the sample pack can be read. Start the server with ANTHROPIC_API_KEY to read your own bills.');
+  throw new Error('Live AI is off, so only the sample pack can be read. Enable live AI on the server to read your own bills.');
 }
 
 async function pool(items, n, fn) {
@@ -252,7 +252,7 @@ async function handleFiles(files) {
   const thumbs = files.map((f) => /^image\//.test(f.type) ? `<img src="${URL.createObjectURL(f)}" alt="">` : `<div class="pdf">${ic('file')}PDF</div>`).join('');
   addMsg(`<div class="thumbs">${thumbs}</div>${plural(files.length, 'file')}`, 'me');
 
-  const prog = await botSays(`Got ${files.length}. Reading them now${S.aiEnabled ? ' with Claude vision' : ''}…<ul class="prog">${files.map((f, k) => `<li id="p${k}"><span class="spin" aria-hidden="true"></span><span class="n">${esc(f.name)}</span></li>`).join('')}</ul>`, 300);
+  const prog = await botSays(`Got ${files.length}. Reading them now${S.aiEnabled ? ' with AI' : ''}…<ul class="prog">${files.map((f, k) => `<li id="p${k}"><span class="spin" aria-hidden="true"></span><span class="n">${esc(f.name)}</span></li>`).join('')}</ul>`, 300);
   const errors = [], fallbacks = [];
   await pool(files, 4, async (file, k) => {
     const li = prog.querySelector('#p' + k);
@@ -286,7 +286,7 @@ async function handleFiles(files) {
   if (fallbacks.length) {
     S.fallbackUsed = true;
     updateMode();
-    await botSays(alertBox('risk', 'alert', `<b>Live AI failed on ${fallbacks.length} of ${plural(files.length, 'file')}.</b> I used the pre-computed sample data for ${fallbacks.length === 1 ? 'it' : 'them'} instead, so ${fallbacks.length === 1 ? 'that line was' : 'those lines were'} <b>not</b> read live by Claude. They are tagged <i>pre-computed</i> in the claim card.<ul>${fallbacks.map((f) => `<li>${esc(f)}</li>`).join('')}</ul>Check the server window and the API key, then drop the files again for a live read.`));
+    await botSays(alertBox('risk', 'alert', `<b>Live AI failed on ${fallbacks.length} of ${plural(files.length, 'file')}.</b> I used the pre-computed sample data for ${fallbacks.length === 1 ? 'it' : 'them'} instead, so ${fallbacks.length === 1 ? 'that line was' : 'those lines were'} <b>not</b> read live by the AI. They are tagged <i>pre-computed</i> in the claim card.<ul>${fallbacks.map((f) => `<li>${esc(f)}</li>`).join('')}</ul>Check the server window and the API key, then drop the files again for a live read.`));
   }
   if (S.lines.length) { await summarise(); askNext(); }
 }
@@ -556,7 +556,7 @@ function renderClaim() {
   let h = `<div class="c-head">
     <div class="c-top"><h2 tabindex="-1">Expense claim</h2>${claimChip(status, S.submitted ? `${esc(S.submitted.id)} · ` : '')}</div>
     <div class="sub">${esc(POLICY.employee.name)} · ${esc(POLICY.employee.costCentre)} · approver ${esc(POLICY.employee.manager)} · policy ${esc(POLICY.version)}${datePinned(lines) ? ` · checked as of ${longDay(DEMO_TODAY)} (demo)` : ''}</div>
-    ${fallbackN ? `<div class="banner risk">${ic('alert')}<span><b>${plural(fallbackN, 'line')} not read live.</b> The Claude call failed, so ${fallbackN === 1 ? 'it uses' : 'they use'} pre-computed sample data.</span></div>` : ''}
+    ${fallbackN ? `<div class="banner risk">${ic('alert')}<span><b>${plural(fallbackN, 'line')} not read live.</b> The AI call failed, so ${fallbackN === 1 ? 'it uses' : 'they use'} pre-computed sample data.</span></div>` : ''}
     <div class="c-total"><div><span class="lbl">Claimable</span><b class="num">${inr(t.claimable)}</b></div>
       <div class="c-side"><span>of ${inr(t.billed)} billed</span>${adjusted >= 1 ? `<span>${inr(adjusted)} taken off by policy</span>` : ''}${t.excluded >= 1 ? `<span>${inr(t.excluded)} left out</span>` : ''}</div></div>
     <div class="meter" role="img" aria-label="${c.COMPLETE} complete, ${c.NEEDS_INFO} need info, ${c.QUESTIONABLE} questionable, ${c.EXCLUDED} excluded">${seg('COMPLETE')}${seg('QUESTIONABLE')}${seg('NEEDS_INFO')}${seg('EXCLUDED')}</div>
@@ -645,7 +645,7 @@ function openEvidence(id) {
   };
   const items = l.items.length ? `<h3>Line items</h3><table class="items">${l.items.map((i) => `<tr><td>${esc(i.description)}${i.is_alcohol ? ` <span class="tag warn">${ic('glass')}alcohol</span>` : ''}</td><td class="num">${inr(i.amount)}</td></tr>`).join('')}</table>` : '';
   const src = SOURCE[l.via] || SOURCE.demo;
-  const srcNote = l.via === 'claude' ? `${esc(MODEL)} · strict JSON with a confidence per field`
+  const srcNote = l.via === 'claude' ? `AI extraction · strict JSON with a confidence per field`
     : l.via === 'fallback' ? `This is not a live read. Error: ${esc(l.viaErr || 'unknown')}`
     : 'Same JSON shape the live model returns. The policy checks below run for real.';
   lastFocus = document.activeElement;
@@ -705,7 +705,7 @@ function switchView(v) {
   if (v === 'approver') renderApprover();
 }
 
-const EXTRACTION_LABEL = { 'claude-live': 'Claude vision (live)', demo: 'pre-computed demo' };
+const EXTRACTION_LABEL = { 'claude-live': 'AI (live)', demo: 'pre-computed demo' };
 
 async function renderApprover() {
   const box = $('#apprList');

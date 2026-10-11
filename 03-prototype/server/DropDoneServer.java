@@ -36,7 +36,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public class DropDoneServer {
 
-    private static final String ANTHROPIC_URL = "https://api.anthropic.com/v1/messages";
+    private static final String ANTHROPIC_URL = System.getenv().getOrDefault("ANTHROPIC_URL", "https://api.anthropic.com/v1/messages");
     private static final String FALLBACK_BETA = "server-side-fallback-2026-07-01";
 
     private static Path root;
