@@ -1,0 +1,150 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 1060" width="1600" height="1060" role="img" aria-labelledby="t d">
+<title id="t">Drop &amp; Done: technical architecture</title>
+<desc id="d">A static browser app and a zero-dependency local Java server. The browser modules prepare each file, an AI vision model returns fields with confidence through the server proxy, and the deterministic engine builds lines, evaluates policy, groups trips, plans questions and builds the submission. The server holds claims in memory and enforces state transitions.</desc>
+<defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#141414"/></marker>
+<marker id="arg" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#5A5A5A"/></marker></defs>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&amp;family=Schibsted+Grotesk:wght@800;900&amp;family=JetBrains+Mono:wght@500;700&amp;display=swap');
+text { font-family: Archivo, 'Segoe UI', Helvetica, Arial, sans-serif; }
+.amp { font-family: 'Schibsted Grotesk', Archivo, Arial, sans-serif; }
+.h1 { font-size: 40px; font-weight: 900; fill: #141414; letter-spacing: -0.02em; }
+.sub { font-size: 20px; font-weight: 500; fill: #3D3D3D; }
+.zl { font-size: 19px; font-weight: 800; fill: #141414; }
+.zs { font-size: 15px; font-weight: 500; fill: #5A5A5A; }
+.code { font-family: 'JetBrains Mono', Menlo, Consolas, monospace; font-size: 16px; font-weight: 700; fill: #141414; }
+.codew { font-family: 'JetBrains Mono', Menlo, Consolas, monospace; font-size: 15px; font-weight: 700; fill: #FFFFFF; }
+.cs { font-family: 'JetBrains Mono', Menlo, Consolas, monospace; font-size: 13.5px; font-weight: 700; }
+.b { font-size: 15px; font-weight: 500; fill: #3D3D3D; }
+.bw { font-size: 14px; font-weight: 500; fill: #E8E8FC; }
+.h3 { font-size: 20px; font-weight: 800; fill: #141414; }
+.al { font-size: 14px; font-weight: 700; fill: #141414; }
+.foot { font-size: 14px; font-weight: 500; fill: #5A5A5A; }
+</style>
+<rect width="1600" height="1060" fill="#FFFFFF"/>
+<g transform="translate(60,50) scale(3)"><circle cx="12" cy="12" r="12" fill="#3535F3"/><path d="M17.587 14.559c-.883 0-1.49-.648-1.49-1.574 0-.912.62-1.56 1.49-1.56s1.491.648 1.491 1.573c0 .897-.634 1.56-1.49 1.56zm.03-5.152c-2.265 0-3.772 1.437-3.772 3.576 0 2.195 1.451 3.604 3.729 3.604 2.264 0 3.755-1.409 3.755-3.59 0-2.153-1.475-3.59-3.713-3.59zM11.78 6.272c-.856 0-1.395.483-1.395 1.243 0 .774.552 1.257 1.435 1.257.857 0 1.395-.483 1.395-1.257 0-.773-.552-1.243-1.435-1.243zm.152 3.204h-.277c-.675 0-1.187.317-1.187 1.285v4.42c0 .98.496 1.284 1.216 1.284h.275c.677 0 1.16-.33 1.16-1.285v-4.419c0-.995-.47-1.285-1.187-1.285zM8.316 7.392h-.4c-.76 0-1.174.43-1.174 1.285v4.13c0 1.063-.36 1.436-1.2 1.436-.662 0-1.201-.29-1.63-.816C3.87 13.373 3 13.786 3 14.81c0 1.104 1.035 1.781 2.955 1.781 2.334 0 3.563-1.173 3.563-3.742V8.675c0-.856-.413-1.283-1.202-1.283z" fill="#FFF"/></g>
+<text x="152" y="86" class="h1">Drop <tspan class="amp" fill="#3535F3">&amp;</tspan> Done: technical architecture</text>
+<text x="152" y="118" class="sub">A static browser app plus one zero-dependency Java server. The model returns fields; <tspan font-family="JetBrains Mono, Menlo, monospace" font-weight="700" fill="#141414">engine.js</tspan> makes every decision.</text>
+<rect x="60" y="160" width="960" height="560" rx="22" fill="#F4F4FE" stroke="none" stroke-width="1.5"/>
+<text x="84" y="194" class="zl" text-anchor="start">Browser</text><text x="178" y="194" class="zs" text-anchor="start">static single-page app · plain JS, no build step, no packages</text>
+<rect x="1044" y="160" width="300" height="560" rx="22" fill="#F4F4FE" stroke="none" stroke-width="1.5"/>
+<text x="1066" y="194" class="zl" text-anchor="start">Local Java server</text>
+<text x="1066" y="216" class="zs" text-anchor="start">127.0.0.1:8787 · JDK 8+, zero deps</text>
+<rect x="1368" y="160" width="172" height="560" rx="22" fill="#F4F4FE" stroke="none" stroke-width="1.5"/>
+<text x="1388" y="194" class="zl" text-anchor="start">External</text>
+<rect x="84" y="216" width="216" height="96" rx="12" fill="#FFFFFF" stroke="#D6D6EA" stroke-width="1.5"/>
+<text x="102" y="246" class="code" text-anchor="start">app.js</text>
+<text x="102" y="272" class="b" text-anchor="start">Chat flow, claim card,</text>
+<text x="102" y="293" class="b" text-anchor="start">evidence, approver inbox</text>
+<rect x="316" y="216" width="216" height="96" rx="12" fill="#FFFFFF" stroke="#D6D6EA" stroke-width="1.5"/>
+<text x="334" y="246" class="code" text-anchor="start">samples.js</text>
+<text x="334" y="272" class="b" text-anchor="start">12 synthetic bills +</text>
+<text x="334" y="293" class="b" text-anchor="start">pre-computed reads (demo)</text>
+<rect x="548" y="216" width="216" height="96" rx="12" fill="#FFFFFF" stroke="#D6D6EA" stroke-width="1.5"/>
+<text x="566" y="246" class="code" text-anchor="start">policy.js</text>
+<text x="566" y="272" class="b" text-anchor="start">TRV-EXP-2026.2 as data,</text>
+<text x="566" y="293" class="b" text-anchor="start">GSTIN mod-36 checksum</text>
+<rect x="780" y="216" width="216" height="96" rx="12" fill="#FFFFFF" stroke="#F7AB20" stroke-width="2.5"/>
+<text x="798" y="246" class="code" text-anchor="start">ai.js</text>
+<text x="798" y="272" class="b" text-anchor="start">Prompt + strict schema;</text>
+<text x="798" y="293" class="b" text-anchor="start">value + confidence each</text>
+<text x="84" y="352" class="al" text-anchor="start">Per file</text><text x="152" y="352" class="b" text-anchor="start">SHA-256 hash  →  images downscaled to 1800 px JPEG  →  4 files in parallel  →  one request each</text>
+<rect x="84" y="378" width="912" height="176" rx="16" fill="#3535F3" stroke="none" stroke-width="1.5"/>
+<text x="106" y="412" class="codew" text-anchor="start">engine.js</text><text x="196" y="412" class="bw" text-anchor="start">deterministic pure functions · no AI · re-run on every answer</text>
+<rect x="106" y="434" width="168" height="100" rx="10" fill="#FFFFFF" stroke="none" stroke-width="1.5"/>
+<text x="120" y="462" class="cs" text-anchor="start" fill="#000093">buildLine</text>
+<text x="120" y="488" class="b" text-anchor="start">INR conversion,</text>
+<text x="120" y="508" class="b" text-anchor="start">city names</text>
+<rect x="284" y="434" width="168" height="100" rx="10" fill="#FFFFFF" stroke="none" stroke-width="1.5"/>
+<text x="298" y="462" class="cs" text-anchor="start" fill="#000093">evaluate</text>
+<text x="298" y="488" class="b" text-anchor="start">facts, duplicates,</text>
+<text x="298" y="508" class="b" text-anchor="start">27 rule outcomes</text>
+<path d="M275 484h7" stroke="#FFFFFF" stroke-width="2.5" marker-end="url(#ar)"/>
+<rect x="462" y="434" width="168" height="100" rx="10" fill="#FFFFFF" stroke="none" stroke-width="1.5"/>
+<text x="476" y="462" class="cs" text-anchor="start" fill="#000093">groupLines</text>
+<text x="476" y="488" class="b" text-anchor="start">new trip on a gap</text>
+<text x="476" y="508" class="b" text-anchor="start">&gt; 1 day or new city</text>
+<path d="M453 484h7" stroke="#FFFFFF" stroke-width="2.5" marker-end="url(#ar)"/>
+<rect x="640" y="434" width="168" height="100" rx="10" fill="#FFFFFF" stroke="none" stroke-width="1.5"/>
+<text x="654" y="462" class="cs" text-anchor="start" fill="#000093">planQuestions</text>
+<text x="654" y="488" class="b" text-anchor="start">one per gap, biggest</text>
+<text x="654" y="508" class="b" text-anchor="start">first, max 3 asked</text>
+<path d="M631 484h7" stroke="#FFFFFF" stroke-width="2.5" marker-end="url(#ar)"/>
+<rect x="818" y="434" width="168" height="100" rx="10" fill="#FFFFFF" stroke="none" stroke-width="1.5"/>
+<text x="832" y="462" class="cs" text-anchor="start" fill="#000093">buildSubmission</text>
+<text x="832" y="488" class="b" text-anchor="start">payload + approver</text>
+<text x="832" y="508" class="b" text-anchor="start">summary (template)</text>
+<path d="M809 484h7" stroke="#FFFFFF" stroke-width="2.5" marker-end="url(#ar)"/>
+<text x="84" y="598" class="al" text-anchor="start">Line states</text>
+<rect x="84" y="616" width="94.8" height="28" rx="14" fill="#25AB21"/><text x="131.4" y="635" class="cs" text-anchor="middle" fill="#FFFFFF">COMPLETE</text>
+<text x="84" y="666" class="b" text-anchor="start">counted</text>
+<rect x="312" y="616" width="112.0" height="28" rx="14" fill="#F7AB20"/><text x="368.0" y="635" class="cs" text-anchor="middle" fill="#141414">NEEDS_INFO</text>
+<text x="312" y="666" class="b" text-anchor="start">blocks submit; asked</text>
+<rect x="540" y="616" width="129.2" height="28" rx="14" fill="#F50031"/><text x="604.6" y="635" class="cs" text-anchor="middle" fill="#FFFFFF">QUESTIONABLE</text>
+<text x="540" y="666" class="b" text-anchor="start">flagged to approver</text>
+<rect x="768" y="616" width="94.8" height="28" rx="14" fill="#5A5A5A"/><text x="815.4" y="635" class="cs" text-anchor="middle" fill="#FFFFFF">EXCLUDED</text>
+<text x="768" y="666" class="b" text-anchor="start">left out, ₹0</text>
+<rect x="1060" y="234" width="268" height="68" rx="10" fill="#FFFFFF" stroke="#F7AB20" stroke-width="2.5"/>
+<text x="1074" y="256" class="cs" text-anchor="start" fill="#3535F3">POST</text><text x="1116.4" y="256" class="cs" text-anchor="start" fill="#141414">AI proxy route</text>
+<text x="1074" y="276" class="b" text-anchor="start">adds the API key from env;</text>
+<text x="1074" y="294" class="b" text-anchor="start">the browser never sees it</text>
+<rect x="1060" y="312" width="268" height="52" rx="10" fill="#FFFFFF" stroke="#D6D6EA" stroke-width="1.5"/>
+<text x="1074" y="334" class="cs" text-anchor="start" fill="#3535F3">GET</text><text x="1107.8" y="334" class="cs" text-anchor="start" fill="#141414">/api/config</text>
+<text x="1074" y="354" class="b" text-anchor="start">live mode on or off</text>
+<rect x="1060" y="438" width="268" height="52" rx="10" fill="#FFFFFF" stroke="#D6D6EA" stroke-width="1.5"/>
+<text x="1074" y="460" class="cs" text-anchor="start" fill="#3535F3">POST</text><text x="1116.4" y="460" class="cs" text-anchor="start" fill="#141414">/api/claims</text>
+<text x="1074" y="480" class="b" text-anchor="start">checks shape → 201 + RCL id</text>
+<rect x="1060" y="506" width="268" height="52" rx="10" fill="#FFFFFF" stroke="#D6D6EA" stroke-width="1.5"/>
+<text x="1074" y="528" class="cs" text-anchor="start" fill="#3535F3">GET</text><text x="1107.8" y="528" class="cs" text-anchor="start" fill="#141414">/api/claims</text>
+<text x="1074" y="548" class="b" text-anchor="start">in-memory claim store</text>
+<rect x="1060" y="574" width="268" height="52" rx="10" fill="#FFFFFF" stroke="#D6D6EA" stroke-width="1.5"/>
+<text x="1074" y="596" class="cs" text-anchor="start" fill="#3535F3">POST</text><text x="1116.4" y="596" class="cs" text-anchor="start" fill="#141414">/…/{id}/decision</text>
+<text x="1074" y="616" class="b" text-anchor="start">legal moves only, else 409</text>
+<rect x="1060" y="642" width="268" height="52" rx="10" fill="#FFFFFF" stroke="#D6D6EA" stroke-width="1.5"/>
+<text x="1074" y="664" class="cs" text-anchor="start" fill="#3535F3">GET</text><text x="1107.8" y="664" class="cs" text-anchor="start" fill="#141414">static files</text>
+<text x="1074" y="684" class="b" text-anchor="start">app + deck, no path traversal</text>
+<rect x="1384" y="226" width="140" height="112" rx="12" fill="#F7AB20" stroke="none" stroke-width="1.5"/>
+<text x="1398" y="254" class="h3" text-anchor="start">AI vision</text><text x="1398" y="278" class="b" text-anchor="start" style="fill:#141414">model API</text><text x="1398" y="298" class="b" text-anchor="start" style="fill:#141414">endpoint set</text><text x="1398" y="316" class="b" text-anchor="start" style="fill:#141414">by env var</text>
+<rect x="1384" y="362" width="140" height="118" rx="12" fill="#FFFFFF" stroke="#5A5A5A" stroke-width="1.5" stroke-dasharray="7 6"/>
+<text x="1398" y="388" class="al" text-anchor="start">Optional</text>
+<text x="1398" y="408" class="b" text-anchor="start">format bridge</text>
+<text x="1398" y="428" class="b" text-anchor="start">(Python stdlib)</text>
+<text x="1398" y="448" class="b" text-anchor="start">for a second</text>
+<text x="1398" y="468" class="b" text-anchor="start">model provider</text>
+<path d="M996 260 H1056" stroke="#141414" stroke-width="2.5" fill="none" marker-end="url(#ar)"/>
+<path d="M1328 260 H1380" stroke="#141414" stroke-width="2.5" fill="none" marker-end="url(#ar)"/>
+<path d="M1300 302 V336 Q1300 421 1340 421 H1380" stroke="#5A5A5A" stroke-width="2" stroke-dasharray="6 5" fill="none" marker-end="url(#arg)"/>
+<path d="M996 484 H1056" stroke="#141414" stroke-width="2.5" fill="none" marker-end="url(#ar)"/>
+<text x="1000" y="474" class="al" text-anchor="start">submit</text>
+<text x="1000" y="250" class="al" text-anchor="start">JSON</text>
+<text x="60" y="776" class="h3" text-anchor="start">Claim lifecycle</text>
+<rect x="60" y="802" width="73.0" height="32" rx="16" fill="#FFFFFF" stroke="#141414" stroke-width="2"/><text x="96.5" y="823" class="cs" text-anchor="middle" fill="#141414">DRAFT</text>
+<path d="M137.0 818h22" stroke="#141414" stroke-width="2" marker-end="url(#ar)"/>
+<rect x="163.0" y="802" width="73.0" height="32" rx="16" fill="#FFFFFF" stroke="#141414" stroke-width="2"/><text x="199.5" y="823" class="cs" text-anchor="middle" fill="#141414">READY</text>
+<path d="M240.0 818h22" stroke="#141414" stroke-width="2" marker-end="url(#ar)"/>
+<rect x="266.0" y="802" width="107.39999999999999" height="32" rx="16" fill="#3535F3" stroke="#3535F3" stroke-width="2"/><text x="319.7" y="823" class="cs" text-anchor="middle" fill="#FFFFFF">SUBMITTED</text>
+<path d="M377.4 818h22" stroke="#141414" stroke-width="2" marker-end="url(#ar)"/>
+<rect x="403.4" y="802" width="98.8" height="32" rx="16" fill="#3535F3" stroke="#3535F3" stroke-width="2"/><text x="452.79999999999995" y="823" class="cs" text-anchor="middle" fill="#FFFFFF">APPROVED</text>
+<path d="M506.2 818h22" stroke="#141414" stroke-width="2" marker-end="url(#ar)"/>
+<rect x="532.2" y="802" width="64.4" height="32" rx="16" fill="#25AB21" stroke="#25AB21" stroke-width="2"/><text x="564.4000000000001" y="823" class="cs" text-anchor="middle" fill="#FFFFFF">PAID</text>
+<rect x="338.4" y="868" width="112" height="32" rx="16" fill="#FFFFFF" stroke="#F50031" stroke-width="2"/><text x="394.4" y="889" class="cs" text-anchor="middle" fill="#F50031">REJECTED</text>
+<path d="M319.7 836 V884 H334.4" stroke="#F50031" stroke-width="2" fill="none" marker-end="url(#arg)"/>
+<path d="M452.79999999999995 836 V884 H454.4" stroke="#F50031" stroke-width="2" fill="none" marker-end="url(#arg)"/>
+<text x="60" y="932" class="b" text-anchor="start">DRAFT and READY live in the browser; the server starts at SUBMITTED.</text>
+<text x="60" y="954" class="b" text-anchor="start">A new answer can move READY back to DRAFT.</text>
+<text x="880" y="776" class="h3" text-anchor="start">Tested and explainable</text>
+<circle cx="889" cy="811" r="9" fill="#3535F3"/><path d="M885 811l3 3 5-6" fill="none" stroke="#FFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="908" y="816" class="b" text-anchor="start" style="font-size:16px">120 tests on Node’s built-in runner, no packages</text>
+<circle cx="889" cy="840" r="9" fill="#3535F3"/><path d="M885 840l3 3 5-6" fill="none" stroke="#FFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="908" y="845" class="b" text-anchor="start" style="font-size:16px">100% line coverage of engine.js, policy.js, ai.js</text>
+<circle cx="889" cy="869" r="9" fill="#3535F3"/><path d="M885 869l3 3 5-6" fill="none" stroke="#FFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="908" y="874" class="b" text-anchor="start" style="font-size:16px">35 golden cases + a gate: every flag code has one</text>
+<circle cx="889" cy="898" r="9" fill="#3535F3"/><path d="M885 898l3 3 5-6" fill="none" stroke="#FFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="908" y="903" class="b" text-anchor="start" style="font-size:16px">Smoke test against the running server: 13 of 13</text>
+<circle cx="889" cy="927" r="9" fill="#3535F3"/><path d="M885 927l3 3 5-6" fill="none" stroke="#FFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="908" y="932" class="b" text-anchor="start" style="font-size:16px">Every flag carries its policy clause and evidence</text>
+<circle cx="889" cy="956" r="9" fill="#3535F3"/><path d="M885 956l3 3 5-6" fill="none" stroke="#FFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="908" y="961" class="b" text-anchor="start" style="font-size:16px">Demo mode replays pre-computed reads, works offline</text>
+<line x1="840" y1="752" x2="840" y2="966" stroke="#D6D6EA" stroke-width="2"/>
+<text x="60" y="1036" class="foot" text-anchor="start">All bills, businesses, people and GSTINs are synthetic. Claims are held in memory and reset on restart.</text>
+<text x="1540" y="1036" class="foot" text-anchor="end">Reliance Jio AI Innovation Lab · Case 1, Expense <tspan class="amp">&amp;</tspan> Reimbursement Agent</text>
+</svg>
