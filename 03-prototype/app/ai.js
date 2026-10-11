@@ -66,7 +66,7 @@ async function aiExtract(doc) {
 
   const res = await fetch('/api/claude', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body) });
   const json = await res.json().catch(() => ({}));
-  if (!res.ok) throw new Error(json.error?.message || `Claude request failed (${res.status})`);
+  if (!res.ok) throw new Error(json.error?.message || `AI request failed (${res.status})`);
   if (json.stop_reason === 'refusal') throw new Error('The model declined to read this document.');
   if (json.stop_reason === 'max_tokens') throw new Error('The response was cut off before it finished.');
   const text = (json.content || []).filter((b) => b.type === 'text').map((b) => b.text).join('');

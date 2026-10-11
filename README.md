@@ -43,6 +43,7 @@ Open **http://localhost:8787/**, click **Try the sample pack** and follow the [3
 
 - **Demo mode** (default, no key needed): the sample pack uses pre-computed extraction; everything else runs for real.
 - **Live mode:** set `ANTHROPIC_API_KEY` in the environment before starting, and your own photos and PDFs are read by Claude vision. The key stays on the local server and is never sent to the browser.
+- **Live mode with a Gemini key:** also needs Python 3.8+. Set `GEMINI_API_KEY`, then run `run-gemini.bat` (Windows) or `sh run-gemini.sh`. Bills are read by gemini-3.5-flash-lite through a small local bridge (`server/gemini_bridge.py`); set `GEMINI_MODEL` to change the model. The key stays in that local process.
 
 The server listens on `127.0.0.1` only. Do not host it with a key; see [Deployment](docs/DESIGN.md#33-deployment).
 
@@ -68,8 +69,9 @@ docs/SPEC.md            product and technical specification (versions in docs/ve
 02-pitch-deck/          pitch deck (HTML)
 03-prototype/
   app/                  browser app: app.js, engine.js, policy.js, ai.js, samples.js
-  server/               DropDoneServer.java (static files, Claude proxy, mock finance API)
-  run.bat, run.sh       launchers
+  server/               DropDoneServer.java (static files, Claude proxy, mock finance API),
+                        gemini_bridge.py (lets a Gemini key drive the same proxy)
+  run.bat, run.sh       launchers; run-gemini.bat / run-gemini.sh for a Gemini key
 tests/                  unit, integration, golden (tests/golden/*.json) and smoke tests
 ```
 

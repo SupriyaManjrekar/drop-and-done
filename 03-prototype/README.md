@@ -19,8 +19,11 @@ Then open **http://localhost:8787/** (set `PORT` to use another port). The pitch
 |---|---|---|
 | **Demo** (default) | Just run it | The 12-bill sample pack uses pre-computed extraction. Everything else (policy, duplicates, questions, submission, approval) runs for real. |
 | **Live AI** | `set ANTHROPIC_API_KEY=...` before `run.bat` | Every bill, including your own photos and PDFs, is read by **Claude Opus 5.5 vision** with strict JSON output and a confidence score per field. |
+| **Live AI with a Gemini key** | `set GEMINI_API_KEY=...` then `run-gemini.bat` (or `GEMINI_API_KEY=... sh run-gemini.sh`) | Same live reading, on **gemini-3.5-flash-lite** (set `GEMINI_MODEL` to change it). Also needs Python 3.8+, standard library only. |
 
 The API key stays on the local Java server, which forwards requests to Claude. The browser never sees it. The server listens on 127.0.0.1 only, and it uses the Windows trust store and system proxy, so it works behind a corporate proxy. Requests opt into server-side `fallbacks: "default"`: if a safety classifier declines, the request is re-run on a recommended model instead of failing.
+
+With a Gemini key, `run-gemini` starts `server/gemini_bridge.py` on 127.0.0.1:8788 (set `BRIDGE_PORT` to change it) and points the Java server at it through `ANTHROPIC_URL`. The bridge turns each extraction request into a Gemini call and the answer back, so the app itself is unchanged. The key stays in that process.
 
 ## 3-minute demo script
 

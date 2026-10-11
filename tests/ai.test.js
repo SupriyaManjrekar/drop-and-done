@@ -70,7 +70,7 @@ test('aiExtract: an HTTP error surfaces the server error message', async () => {
 
 test('aiExtract: an HTTP error without a JSON body reports the status code', async () => {
   stubFetch(502, undefined);
-  await assert.rejects(aiExtract(png), /Claude request failed \(502\)/);
+  await assert.rejects(aiExtract(png), /AI request failed \(502\)/);
 });
 
 test('aiExtract: invalid JSON text from the model throws', async () => {

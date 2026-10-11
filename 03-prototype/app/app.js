@@ -106,7 +106,7 @@ function updateMode() {
   }[state];
   m.title = {
     demo: 'The sample pack replays pre-computed extraction. Enable live AI on the server to read your own bills.',
-    live: `Bills are read by ${MODEL} in real time`,
+    live: 'Bills are read by AI in real time',
     warn: 'At least one live call failed and pre-computed sample data was used instead. See the chat for details.',
   }[state];
 }

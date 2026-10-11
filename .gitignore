@@ -25,3 +25,6 @@ Thumbs.db
 desktop.ini
 *~
 *.swp
+
+# Python bytecode from server/gemini_bridge.py
+__pycache__/
