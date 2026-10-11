@@ -133,9 +133,9 @@ text { font-family: Archivo, 'Segoe UI', Helvetica, Arial, sans-serif; }
 <text x="60" y="954" class="b" text-anchor="start">A new answer can move READY back to DRAFT.</text>
 <text x="880" y="776" class="h3" text-anchor="start">Tested and explainable</text>
 <circle cx="889" cy="811" r="9" fill="#3535F3"/><path d="M885 811l3 3 5-6" fill="none" stroke="#FFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-<text x="908" y="816" class="b" text-anchor="start" style="font-size:16px">120 tests on Node’s built-in runner, no packages</text>
+<text x="908" y="816" class="b" text-anchor="start" style="font-size:16px">144 tests on Node’s built-in runner, no packages</text>
 <circle cx="889" cy="840" r="9" fill="#3535F3"/><path d="M885 840l3 3 5-6" fill="none" stroke="#FFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-<text x="908" y="845" class="b" text-anchor="start" style="font-size:16px">100% line coverage of engine.js, policy.js, ai.js</text>
+<text x="908" y="845" class="b" text-anchor="start" style="font-size:16px">100% line coverage: engine, policy, ai, store</text>
 <circle cx="889" cy="869" r="9" fill="#3535F3"/><path d="M885 869l3 3 5-6" fill="none" stroke="#FFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
 <text x="908" y="874" class="b" text-anchor="start" style="font-size:16px">35 golden cases + a gate: every flag code has one</text>
 <circle cx="889" cy="898" r="9" fill="#3535F3"/><path d="M885 898l3 3 5-6" fill="none" stroke="#FFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>

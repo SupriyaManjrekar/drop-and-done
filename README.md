@@ -64,7 +64,7 @@ The server listens on `127.0.0.1` only. Do not host it with a key; see [Deployme
 
 ### Or run it in the browser, with no install
 
-The same app also runs as a static site with no server: **[supriyamanjrekar.github.io/drop-and-done](https://supriyamanjrekar.github.io/drop-and-done/)**, published by GitHub Pages from `main` (the root `index.html` redirects to the app). [`.gitlab-ci.yml`](.gitlab-ci.yml) does the same on GitLab Pages. Any static file server works too, for example `python3 -m http.server` from this folder, then open `/03-prototype/app/`.
+The same app also runs as a static site with no server: **[supriyamanjrekar.github.io/drop-and-done](https://supriyamanjrekar.github.io/drop-and-done/)**, published by GitHub Pages from `main`. Its home page (`index.html`) has the demo video, both architecture diagrams and a link into the app. [`.gitlab-ci.yml`](.gitlab-ci.yml) does the same on GitLab Pages. Any static file server works too, for example `python3 -m http.server` from this folder, then open `/03-prototype/app/`.
 
 - On first open, a start screen offers two paths: **Use my key** or **Try the demo pack without a key**.
 - **Your own key:** create a free Gemini API key in [Google AI Studio](https://aistudio.google.com/apikey) and paste it. Bills are then read live, straight from the browser to Google's API, on gemini-3.5-flash-lite. The key is kept in this tab only (sessionStorage), or on this device if you tick *Remember* (localStorage). **AI key > Forget key** removes it.
@@ -97,7 +97,7 @@ docs/SPEC.md            product and technical specification (versions in docs/ve
                         gemini_bridge.py (lets a Gemini key drive the same proxy)
   run.bat, run.sh       launchers; run-gemini.bat / run-gemini.sh for a Gemini key
 tests/                  unit, integration, golden (tests/golden/*.json) and smoke tests
-index.html, .nojekyll   GitHub Pages entry: redirects to the app
+index.html, .nojekyll   GitHub Pages home: video, diagrams, link to the app
 .gitlab-ci.yml          GitLab alternative: runs the tests, then publishes to GitLab Pages
 ```
 
