@@ -1,379 +1,75 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 1040" font-family="Segoe UI, Arial, sans-serif">
-  <defs>
-    <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
-      <path d="M0,0 L10,5 L0,10 z" fill="#475569"/>
-    </marker>
-    <marker id="arrB" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
-      <path d="M0,0 L10,5 L0,10 z" fill="#2563eb"/>
-    </marker>
-    <filter id="sh" x="-5%" y="-5%" width="110%" height="120%">
-      <feDropShadow dx="0" dy="1.5" stdDeviation="2" flood-color="#0f172a" flood-opacity="0.12"/>
-    </filter>
-    <style>
-      .title{font-size:30px;font-weight:700;fill:#0f172a}
-      .sub{font-size:15px;fill:#475569}
-      .lane{font-size:13px;font-weight:700;letter-spacing:1.5px;fill:#64748b}
-      .bx{rx:10;filter:url(#sh)}
-      .h{font-size:15px;font-weight:700;fill:#0f172a}
-      .t{font-size:12px;fill:#334155}
-      .tw{font-size:12px;fill:#e2e8f0}
-      .hw{font-size:15px;font-weight:700;fill:#ffffff}
-      .num{font-size:12px;font-weight:700;fill:#fff}
-      .tag{font-size:10.5px;font-weight:700;fill:#fff}
-      .ln{stroke:#475569;stroke-width:1.8;fill:none}
-      .lnB{stroke:#2563eb;stroke-width:2.2;fill:none}
-      .dash{stroke-dasharray:6 5}
-    </style>
-  </defs>
-
-  <rect width="1600" height="1040" fill="#f8fafc"/>
-
-  <!-- Header -->
-  <text x="40" y="52" class="title">Drop &amp; Done — AI-Native Reimbursement Assistant</text>
-  <text x="40" y="78" class="sub">Solution architecture · from a pile of receipts to a submission-ready, policy-checked claim</text>
-  <g transform="translate(1180,34)">
-    <rect width="380" height="52" rx="8" fill="#fff" stroke="#cbd5e1"/>
-    <rect x="14" y="12" width="14" height="14" rx="3" fill="#2563eb"/><text x="34" y="24" class="t">Primary claim flow</text>
-    <line x1="150" y1="19" x2="185" y2="19" class="ln dash"/><text x="192" y="24" class="t">Async / feedback</text>
-    <rect x="14" y="32" width="14" height="14" rx="3" fill="#f59e0b"/><text x="34" y="44" class="t">Mocked for prototype</text>
-    <rect x="150" y="32" width="14" height="14" rx="3" fill="#7c3aed"/><text x="170" y="44" class="t">LLM-powered (Claude)</text>
-  </g>
-
-  <!-- ================= LANE 1: CHANNELS ================= -->
-  <rect x="30" y="110" width="250" height="760" rx="14" fill="#eef2ff" stroke="#c7d2fe"/>
-  <text x="50" y="138" class="lane">1 · CHANNELS</text>
-
-  <g transform="translate(50,155)">
-    <rect width="210" height="92" class="bx" fill="#fff" stroke="#a5b4fc"/>
-    <text x="14" y="26" class="h">💬 Chat (primary)</text>
-    <text x="14" y="48" class="t">WhatsApp · MS Teams · JioChat</text>
-    <text x="14" y="66" class="t">Web chat widget</text>
-    <text x="14" y="84" class="t">Drag-drop photos / PDFs / zips</text>
-  </g>
-  <g transform="translate(50,262)">
-    <rect width="210" height="74" class="bx" fill="#fff" stroke="#a5b4fc"/>
-    <text x="14" y="26" class="h">📧 Email forward</text>
-    <text x="14" y="48" class="t">claims@… inbox — airline,</text>
-    <text x="14" y="65" class="t">hotel, cab e-invoices</text>
-  </g>
-  <g transform="translate(50,351)">
-    <rect width="210" height="74" class="bx" fill="#fff" stroke="#a5b4fc"/>
-    <text x="14" y="26" class="h">💳 Spend feeds</text>
-    <text x="14" y="48" class="t">Corporate card · UPI SMS</text>
-    <text x="14" y="65" class="t">(missing-receipt detection)</text>
-  </g>
-
-  <text x="50" y="460" class="lane">USERS</text>
-  <g transform="translate(50,472)">
-    <rect width="210" height="66" class="bx" fill="#1e293b"/>
-    <text x="14" y="26" class="hw">👤 Employee</text>
-    <text x="14" y="48" class="tw">Drops bills, answers ≤3 Qs, submits</text>
-  </g>
-  <g transform="translate(50,552)">
-    <rect width="210" height="66" class="bx" fill="#1e293b"/>
-    <text x="14" y="26" class="hw">✅ Approver</text>
-    <text x="14" y="48" class="tw">1-line summary, approve in chat</text>
-  </g>
-  <g transform="translate(50,632)">
-    <rect width="210" height="66" class="bx" fill="#1e293b"/>
-    <text x="14" y="26" class="hw">🔎 Finance / Audit</text>
-    <text x="14" y="48" class="tw">Risk-based review queue</text>
-  </g>
-  <g transform="translate(50,712)">
-    <rect width="210" height="140" class="bx" fill="#fff" stroke="#a5b4fc"/>
-    <text x="14" y="26" class="h">🗂 Claim Card (output)</text>
-    <text x="14" y="50" class="t">✅ Complete lines</text>
-    <text x="14" y="70" class="t">⚠️ Needs info (1-tap answers)</text>
-    <text x="14" y="90" class="t">🚩 Questionable (with reason)</text>
-    <text x="14" y="110" class="t">₹ Totals by trip / category</text>
-    <text x="14" y="130" class="t">[ Submit ]  one button</text>
-  </g>
-
-  <!-- ================= LANE 2: ORCHESTRATOR ================= -->
-  <rect x="310" y="110" width="290" height="760" rx="14" fill="#f5f3ff" stroke="#ddd6fe"/>
-  <text x="330" y="138" class="lane">2 · CONVERSATION LAYER</text>
-
-  <g transform="translate(330,155)">
-    <rect width="250" height="70" class="bx" fill="#fff" stroke="#c4b5fd"/>
-    <text x="14" y="26" class="h">Channel Gateway</text>
-    <text x="14" y="47" class="t">Webhooks · SSO identity mapping</text>
-    <text x="14" y="63" class="t">File intake → object store</text>
-  </g>
-
-  <g transform="translate(330,245)">
-    <rect width="250" height="300" class="bx" fill="#7c3aed"/>
-    <text x="14" y="28" class="hw">🤖 Assistant Orchestrator</text>
-    <text x="14" y="48" class="tw">Agent loop (Claude) with tools</text>
-    <rect x="14" y="62" width="222" height="48" rx="7" fill="#6d28d9"/>
-    <text x="24" y="82" class="hw" style="font-size:13px">Session &amp; Claim Context</text>
-    <text x="24" y="100" class="tw">draft claim, history, profile</text>
-    <rect x="14" y="118" width="222" height="62" rx="7" fill="#6d28d9"/>
-    <text x="24" y="138" class="hw" style="font-size:13px">Question Planner</text>
-    <text x="24" y="156" class="tw">asks only blocking gaps, batched,</text>
-    <text x="24" y="172" class="tw">max 3 Qs, quick-reply buttons</text>
-    <rect x="14" y="188" width="222" height="48" rx="7" fill="#6d28d9"/>
-    <text x="24" y="208" class="hw" style="font-size:13px">Explainer</text>
-    <text x="24" y="226" class="tw">plain-language flags + fix hints</text>
-    <rect x="14" y="244" width="222" height="44" rx="7" fill="#6d28d9"/>
-    <text x="24" y="264" class="hw" style="font-size:13px">Claim Card Renderer</text>
-    <text x="24" y="280" class="tw">live status, one-tap submit</text>
-  </g>
-
-  <g transform="translate(330,565)">
-    <rect width="250" height="88" class="bx" fill="#fff" stroke="#c4b5fd"/>
-    <text x="14" y="26" class="h">Approver Copilot</text>
-    <text x="14" y="47" class="t">Summarises claim + exceptions</text>
-    <text x="14" y="64" class="t">Approve / reject / query in chat</text>
-    <text x="14" y="80" class="t">Escalates only flagged claims</text>
-  </g>
-  <g transform="translate(330,673)">
-    <rect width="250" height="88" class="bx" fill="#fff" stroke="#c4b5fd"/>
-    <text x="14" y="26" class="h">Proactive Nudges</text>
-    <text x="14" y="47" class="t">"Card txn ₹640 has no receipt"</text>
-    <text x="14" y="64" class="t">"Bill hotel to company GSTIN"</text>
-    <text x="14" y="80" class="t">Deadline reminders</text>
-  </g>
-  <g transform="translate(330,781)">
-    <rect width="250" height="70" class="bx" fill="#fff" stroke="#c4b5fd"/>
-    <text x="14" y="26" class="h">Multilingual</text>
-    <text x="14" y="47" class="t">English · Hindi · regional bills</text>
-    <text x="14" y="63" class="t">and chat replies</text>
-  </g>
-
-  <!-- ================= LANE 3: DOCUMENT INTELLIGENCE ================= -->
-  <rect x="630" y="110" width="430" height="370" rx="14" fill="#ecfeff" stroke="#a5f3fc"/>
-  <text x="650" y="138" class="lane">3 · DOCUMENT INTELLIGENCE PIPELINE</text>
-
-  <g transform="translate(650,155)">
-    <rect width="190" height="96" class="bx" fill="#fff" stroke="#67e8f9"/>
-    <rect x="0" y="0" width="26" height="26" rx="8" fill="#0891b2"/><text x="8" y="18" class="num">1</text>
-    <text x="34" y="19" class="h">Ingest &amp; Normalise</text>
-    <text x="12" y="44" class="t">PDF split · multi-bill photos</text>
-    <text x="12" y="61" class="t">deskew · enhance faded thermal</text>
-    <text x="12" y="78" class="t">perceptual hash (pHash)</text>
-  </g>
-  <g transform="translate(850,155)">
-    <rect width="190" height="96" class="bx" fill="#fff" stroke="#67e8f9"/>
-    <rect x="0" y="0" width="26" height="26" rx="8" fill="#0891b2"/><text x="8" y="18" class="num">2</text>
-    <text x="34" y="19" class="h">Classify</text>
-    <text x="12" y="44" class="t">Hotel · Flight · Cab · Meal</text>
-    <text x="12" y="61" class="t">Fuel · UPI screenshot · Other</text>
-    <text x="12" y="78" class="t">Not-a-receipt rejection</text>
-  </g>
-  <g transform="translate(650,266)">
-    <rect width="190" height="196" class="bx" fill="#7c3aed"/>
-    <rect x="0" y="0" width="26" height="26" rx="8" fill="#4c1d95"/><text x="8" y="18" class="num">3</text>
-    <text x="34" y="19" class="hw">Vision Extraction</text>
-    <text x="12" y="44" class="tw">Claude vision → strict JSON</text>
-    <text x="12" y="64" class="tw">vendor · date · amount · tax</text>
-    <text x="12" y="81" class="tw">GSTIN · invoice no · city</text>
-    <text x="12" y="98" class="tw">payment mode · line items</text>
-    <rect x="12" y="110" width="166" height="74" rx="7" fill="#6d28d9"/>
-    <text x="20" y="130" class="hw" style="font-size:12.5px">Per field:</text>
-    <text x="20" y="148" class="tw">value + confidence (0–1)</text>
-    <text x="20" y="165" class="tw">+ source region (evidence)</text>
-  </g>
-  <g transform="translate(850,266)">
-    <rect width="190" height="196" class="bx" fill="#fff" stroke="#67e8f9"/>
-    <rect x="0" y="0" width="26" height="26" rx="8" fill="#0891b2"/><text x="8" y="18" class="num">4</text>
-    <text x="34" y="19" class="h">Validate &amp; Enrich</text>
-    <text x="12" y="44" class="t">Arithmetic: items + tax = total</text>
-    <text x="12" y="62" class="t">GSTIN checksum + GSTN lookup</text>
-    <text x="12" y="80" class="t">Date sanity (future / stale)</text>
-    <text x="12" y="98" class="t">FX conversion → INR</text>
-    <text x="12" y="116" class="t">Vendor normalisation</text>
-    <text x="12" y="134" class="t">Confidence re-scoring</text>
-    <text x="12" y="160" class="h" style="font-size:12.5px;fill:#0e7490">Low confidence → Question</text>
-    <text x="12" y="178" class="h" style="font-size:12.5px;fill:#0e7490">High confidence → Auto-fill</text>
-  </g>
-
-  <!-- ================= LANE 4: CLAIM INTELLIGENCE ================= -->
-  <rect x="630" y="500" width="430" height="370" rx="14" fill="#f0fdf4" stroke="#bbf7d0"/>
-  <text x="650" y="528" class="lane">4 · CLAIM INTELLIGENCE</text>
-
-  <g transform="translate(650,545)">
-    <rect width="190" height="100" class="bx" fill="#fff" stroke="#86efac"/>
-    <text x="12" y="24" class="h">🧩 Grouping Engine</text>
-    <text x="12" y="46" class="t">Cluster by date window,</text>
-    <text x="12" y="63" class="t">city, calendar, travel booking</text>
-    <text x="12" y="82" class="t">→ "Delhi trip 12–14 Oct"</text>
-  </g>
-  <g transform="translate(850,545)">
-    <rect width="190" height="100" class="bx" fill="#fff" stroke="#86efac"/>
-    <text x="12" y="24" class="h">📏 Policy Engine</text>
-    <text x="12" y="46" class="t">Rules-as-code (YAML) by grade,</text>
-    <text x="12" y="63" class="t">city tier, category caps</text>
-    <text x="12" y="82" class="t">+ LLM for fuzzy rules</text>
-  </g>
-  <g transform="translate(650,657)">
-    <rect width="190" height="100" class="bx" fill="#fff" stroke="#86efac"/>
-    <text x="12" y="24" class="h">🛡 Integrity Checks</text>
-    <text x="12" y="46" class="t">Duplicates: hash · txn · cross-</text>
-    <text x="12" y="63" class="t">employee · AI-fake signals</text>
-    <text x="12" y="82" class="t">Peer anomaly scoring</text>
-  </g>
-  <g transform="translate(850,657)">
-    <rect width="190" height="100" class="bx" fill="#fff" stroke="#86efac"/>
-    <text x="12" y="24" class="h">₹ GST Recovery</text>
-    <text x="12" y="46" class="t">Company GSTIN on invoice?</text>
-    <text x="12" y="63" class="t">Eligible ITC tagging</text>
-    <text x="12" y="82" class="t">Leakage report</text>
-  </g>
-  <g transform="translate(650,769)">
-    <rect width="390" height="86" class="bx" fill="#15803d"/>
-    <text x="14" y="25" class="hw">⚙ Claim State Machine</text>
-    <text x="14" y="46" class="tw">Each line: COMPLETE · NEEDS_INFO · QUESTIONABLE · EXCLUDED</text>
-    <text x="14" y="64" class="tw">Claim: DRAFT → READY → SUBMITTED → APPROVED → PAID</text>
-    <text x="14" y="80" class="tw">Category checklists (hotel needs invoice + GSTIN + dates)</text>
-  </g>
-
-  <!-- ================= LANE 5: DATA ================= -->
-  <rect x="1090" y="110" width="230" height="760" rx="14" fill="#fff7ed" stroke="#fed7aa"/>
-  <text x="1110" y="138" class="lane">5 · DATA &amp; KNOWLEDGE</text>
-  <g transform="translate(1110,155)">
-    <rect width="190" height="62" class="bx" fill="#fff" stroke="#fdba74"/>
-    <text x="12" y="25" class="h">🗄 Claim Store</text>
-    <text x="12" y="46" class="t">Postgres · claims, lines, state</text>
-  </g>
-  <g transform="translate(1110,229)">
-    <rect width="190" height="62" class="bx" fill="#fff" stroke="#fdba74"/>
-    <text x="12" y="25" class="h">📁 Document Store</text>
-    <text x="12" y="46" class="t">Encrypted blob · originals</text>
-  </g>
-  <g transform="translate(1110,303)">
-    <rect width="190" height="62" class="bx" fill="#fff" stroke="#fdba74"/>
-    <text x="12" y="25" class="h">📜 Policy Repository</text>
-    <text x="12" y="46" class="t">Versioned rules + source PDF</text>
-  </g>
-  <g transform="translate(1110,377)">
-    <rect width="190" height="62" class="bx" fill="#fff" stroke="#fdba74"/>
-    <text x="12" y="25" class="h">🔢 Fingerprint Index</text>
-    <text x="12" y="46" class="t">pHash + txn keys (dup search)</text>
-  </g>
-  <g transform="translate(1110,451)">
-    <rect width="190" height="62" class="bx" fill="#fff" stroke="#fdba74"/>
-    <text x="12" y="25" class="h">👥 Employee Profile</text>
-    <text x="12" y="46" class="t">Grade · cost centre · manager</text>
-  </g>
-  <g transform="translate(1110,525)">
-    <rect width="190" height="62" class="bx" fill="#fff" stroke="#fdba74"/>
-    <text x="12" y="25" class="h">🧾 Audit Log</text>
-    <text x="12" y="46" class="t">Every AI decision + evidence</text>
-  </g>
-  <g transform="translate(1110,599)">
-    <rect width="190" height="100" class="bx" fill="#fff" stroke="#fdba74"/>
-    <text x="12" y="25" class="h">🔁 Learning Loop</text>
-    <text x="12" y="46" class="t">User corrections + auditor</text>
-    <text x="12" y="63" class="t">overrides → eval set,</text>
-    <text x="12" y="80" class="t">prompt &amp; threshold tuning</text>
-  </g>
-  <g transform="translate(1110,711)">
-    <rect width="190" height="140" class="bx" fill="#fff" stroke="#fdba74"/>
-    <text x="12" y="25" class="h">📊 Analytics</text>
-    <text x="12" y="46" class="t">Time-to-ready per claim</text>
-    <text x="12" y="63" class="t">First-pass approval rate</text>
-    <text x="12" y="80" class="t">Questions asked / claim</text>
-    <text x="12" y="97" class="t">GST recovered · fraud caught</text>
-    <text x="12" y="114" class="t">Spend by category / BU</text>
-  </g>
-
-  <!-- ================= LANE 6: INTEGRATIONS ================= -->
-  <rect x="1350" y="110" width="220" height="760" rx="14" fill="#fffbeb" stroke="#fde68a"/>
-  <text x="1370" y="138" class="lane">6 · INTEGRATIONS</text>
-  <g transform="translate(1370,155)">
-    <rect width="180" height="110" class="bx" fill="#f59e0b"/>
-    <text x="12" y="26" class="hw">🏦 Reimbursement</text>
-    <text x="12" y="45" class="hw">System (Mock)</text>
-    <text x="12" y="68" class="tw" style="fill:#fff">POST /claims</text>
-    <text x="12" y="85" class="tw" style="fill:#fff">GET /claims/{id}/status</text>
-    <text x="12" y="102" class="tw" style="fill:#fff">SAP / Oracle later</text>
-  </g>
-  <g transform="translate(1370,280)">
-    <rect width="180" height="72" class="bx" fill="#f59e0b"/>
-    <text x="12" y="26" class="hw">HRMS (Mock)</text>
-    <text x="12" y="48" class="tw" style="fill:#fff">grade, manager, bank a/c</text>
-  </g>
-  <g transform="translate(1370,367)">
-    <rect width="180" height="72" class="bx" fill="#f59e0b"/>
-    <text x="12" y="26" class="hw">Calendar / Travel</text>
-    <text x="12" y="48" class="tw" style="fill:#fff">trips, meetings (grouping)</text>
-  </g>
-  <g transform="translate(1370,454)">
-    <rect width="180" height="72" class="bx" fill="#fff" stroke="#fcd34d"/>
-    <text x="12" y="26" class="h">GSTN API</text>
-    <text x="12" y="48" class="t">GSTIN validity lookup</text>
-  </g>
-  <g transform="translate(1370,541)">
-    <rect width="180" height="72" class="bx" fill="#fff" stroke="#fcd34d"/>
-    <text x="12" y="26" class="h">FX Rates</text>
-    <text x="12" y="48" class="t">Foreign-currency bills</text>
-  </g>
-  <g transform="translate(1370,628)">
-    <rect width="180" height="72" class="bx" fill="#7c3aed"/>
-    <text x="12" y="26" class="hw">Claude API</text>
-    <text x="12" y="48" class="tw">vision · reasoning · tools</text>
-  </g>
-  <g transform="translate(1370,715)">
-    <rect width="180" height="136" class="bx" fill="#fff" stroke="#fcd34d"/>
-    <text x="12" y="26" class="h">🔐 Security</text>
-    <text x="12" y="48" class="t">SSO / RBAC</text>
-    <text x="12" y="66" class="t">PII masking before LLM</text>
-    <text x="12" y="84" class="t">Encryption at rest/transit</text>
-    <text x="12" y="102" class="t">Data residency (India)</text>
-    <text x="12" y="120" class="t">Human-in-loop on payouts</text>
-  </g>
-
-  <!-- ================= ARROWS ================= -->
-  <!-- channels -> gateway -->
-  <path d="M260,200 L330,190" class="lnB" marker-end="url(#arrB)"/>
-  <path d="M260,299 C295,299 300,205 330,200" class="ln" marker-end="url(#arr)"/>
-  <path d="M260,388 C300,388 300,215 330,212" class="ln dash" marker-end="url(#arr)"/>
-  <!-- gateway -> orchestrator -->
-  <path d="M455,225 L455,245" class="lnB" marker-end="url(#arrB)"/>
-  <!-- gateway -> ingest -->
-  <path d="M580,190 L650,200" class="lnB" marker-end="url(#arrB)"/>
-  <!-- pipeline -->
-  <path d="M840,203 L850,203" class="lnB" marker-end="url(#arrB)"/>
-  <path d="M945,251 C945,258 745,255 745,266" class="lnB" marker-end="url(#arrB)"/>
-  <path d="M840,364 L850,364" class="lnB" marker-end="url(#arrB)"/>
-  <!-- validate -> claim intel -->
-  <path d="M945,462 L945,500 L745,500 L745,545" class="lnB" marker-end="url(#arrB)"/>
-  <!-- intel internal -->
-  <path d="M840,595 L850,595" class="ln" marker-end="url(#arr)"/>
-  <path d="M745,645 L745,657" class="ln" marker-end="url(#arr)"/>
-  <path d="M945,645 L945,657" class="ln" marker-end="url(#arr)"/>
-  <path d="M745,757 L745,769" class="ln" marker-end="url(#arr)"/>
-  <path d="M945,757 L945,769" class="ln" marker-end="url(#arr)"/>
-  <!-- state machine -> orchestrator (questions + card) -->
-  <path d="M650,812 C610,812 610,480 580,470" class="lnB" marker-end="url(#arrB)"/>
-  <text x="604" y="640" class="t" transform="rotate(-90 604 640)" style="fill:#2563eb;font-weight:700">gaps · flags · status</text>
-  <!-- orchestrator -> claim card -->
-  <path d="M330,520 C300,560 300,760 260,780" class="lnB" marker-end="url(#arrB)"/>
-  <!-- orchestrator <-> employee -->
-  <path d="M330,400 C300,420 290,490 260,500" class="ln" marker-end="url(#arr)"/>
-  <!-- approver copilot -->
-  <path d="M330,609 L260,590" class="ln" marker-end="url(#arr)"/>
-  <!-- data links -->
-  <path d="M1060,812 C1085,812 1085,190 1110,186" class="ln dash" marker-end="url(#arr)"/>
-  <path d="M1040,595 C1075,595 1075,334 1110,334" class="ln dash" marker-end="url(#arr)"/>
-  <path d="M1040,707 C1080,707 1080,408 1110,408" class="ln dash" marker-end="url(#arr)"/>
-  <!-- submit to mock reimbursement -->
-  <path d="M1300,186 L1370,200" class="lnB" marker-end="url(#arrB)"/>
-  <text x="1306" y="176" class="t" style="fill:#2563eb;font-weight:700">submit</text>
-  <!-- learning loop feedback -->
-  <path d="M1110,650 C1075,650 1070,470 1060,440" class="ln dash" marker-end="url(#arr)"/>
-
-  <!-- ================= FOOTER: FLOW STRIP ================= -->
-  <rect x="30" y="890" width="1540" height="128" rx="14" fill="#0f172a"/>
-  <text x="54" y="922" class="hw" style="font-size:16px">End-to-end flow · target &lt; 2 minutes for a 10-receipt trip (vs ~20 min today)</text>
-  <g transform="translate(54,940)" font-size="13">
-    <rect width="168" height="56" rx="8" fill="#1e3a8a"/><text x="12" y="23" class="hw" style="font-size:13px">① Drop</text><text x="12" y="43" class="tw">12 files in one go</text>
-    <rect x="182" width="168" height="56" rx="8" fill="#1e3a8a"/><text x="194" y="23" class="hw" style="font-size:13px">② Read</text><text x="194" y="43" class="tw">extract + confidence</text>
-    <rect x="364" width="168" height="56" rx="8" fill="#1e3a8a"/><text x="376" y="23" class="hw" style="font-size:13px">③ Organise</text><text x="376" y="43" class="tw">group into trips</text>
-    <rect x="546" width="168" height="56" rx="8" fill="#1e3a8a"/><text x="558" y="23" class="hw" style="font-size:13px">④ Check</text><text x="558" y="43" class="tw">policy · dup · GST</text>
-    <rect x="728" width="168" height="56" rx="8" fill="#1e3a8a"/><text x="740" y="23" class="hw" style="font-size:13px">⑤ Ask</text><text x="740" y="43" class="tw">≤ 3 smart questions</text>
-    <rect x="910" width="168" height="56" rx="8" fill="#1e3a8a"/><text x="922" y="23" class="hw" style="font-size:13px">⑥ Ready</text><text x="922" y="43" class="tw">claim card + submit</text>
-    <rect x="1092" width="168" height="56" rx="8" fill="#15803d"/><text x="1104" y="23" class="hw" style="font-size:13px">⑦ Approve</text><text x="1104" y="43" class="tw">copilot, in chat</text>
-    <rect x="1274" width="198" height="56" rx="8" fill="#f59e0b"/><text x="1286" y="23" class="hw" style="font-size:13px">⑧ Pay</text><text x="1286" y="43" class="tw" style="fill:#fff">mock finance → PAID</text>
-  </g>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 1000" width="1600" height="1000" role="img" aria-labelledby="t d">
+<title id="t">Drop &amp; Done: how it works</title>
+<desc id="d">An employee drops bills into a chat. The AI reads each bill. Plain, tested rules code decides. The claim is submitted to a mock reimbursement system, then approved and paid. Below: what is built in the prototype and what is planned for production.</desc>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&amp;family=Schibsted+Grotesk:wght@800;900&amp;display=swap');
+text { font-family: Archivo, 'Segoe UI', Helvetica, Arial, sans-serif; }
+.h1 { font-size: 44px; font-weight: 900; fill: #141414; letter-spacing: -0.02em; }
+.sub { font-size: 22px; font-weight: 500; fill: #3D3D3D; }
+.lab { font-size: 22px; font-weight: 800; letter-spacing: 0.01em; }
+.h2 { font-size: 28px; font-weight: 800; fill: #141414; letter-spacing: -0.01em; }
+.b { font-size: 18px; font-weight: 500; fill: #3D3D3D; }
+.tag { font-size: 15px; font-weight: 700; fill: #000093; }
+.h3 { font-size: 24px; font-weight: 800; fill: #141414; }
+.li { font-size: 19px; font-weight: 500; fill: #3D3D3D; }
+.lip { font-size: 19px; font-weight: 500; fill: #5A5A5A; }
+.amp { font-family: 'Schibsted Grotesk', Archivo, 'Segoe UI', Arial, sans-serif; }
+.foot { font-size: 15px; font-weight: 500; fill: #5A5A5A; }
+</style>
+<rect width="1600" height="1000" fill="#FFFFFF"/>
+<g transform="translate(64,58) scale(3.4)"><circle cx="12" cy="12" r="12" fill="#3535F3"/><path d="M17.587 14.559c-.883 0-1.49-.648-1.49-1.574 0-.912.62-1.56 1.49-1.56s1.491.648 1.491 1.573c0 .897-.634 1.56-1.49 1.56zm.03-5.152c-2.265 0-3.772 1.437-3.772 3.576 0 2.195 1.451 3.604 3.729 3.604 2.264 0 3.755-1.409 3.755-3.59 0-2.153-1.475-3.59-3.713-3.59zM11.78 6.272c-.856 0-1.395.483-1.395 1.243 0 .774.552 1.257 1.435 1.257.857 0 1.395-.483 1.395-1.257 0-.773-.552-1.243-1.435-1.243zm.152 3.204h-.277c-.675 0-1.187.317-1.187 1.285v4.42c0 .98.496 1.284 1.216 1.284h.275c.677 0 1.16-.33 1.16-1.285v-4.419c0-.995-.47-1.285-1.187-1.285zM8.316 7.392h-.4c-.76 0-1.174.43-1.174 1.285v4.13c0 1.063-.36 1.436-1.2 1.436-.662 0-1.201-.29-1.63-.816C3.87 13.373 3 13.786 3 14.81c0 1.104 1.035 1.781 2.955 1.781 2.334 0 3.563-1.173 3.563-3.742V8.675c0-.856-.413-1.283-1.202-1.283z" fill="#FFF"/></g>
+<text x="166" y="100" class="h1">Drop <tspan class="amp" fill="#3535F3">&amp;</tspan> Done: how it works</text>
+<text x="166" y="136" class="sub">A pile of bills becomes an approved claim. The AI only reads; plain, tested code makes every decision.</text>
+<rect x="128.0" y="216" width="144" height="40" rx="20" fill="#FFFFFF" stroke="#141414" stroke-width="2.5"/><text x="200" y="244" class="lab" text-anchor="middle" fill="#141414">You drop</text>
+<rect x="428.0" y="216" width="144" height="40" rx="20" fill="#F7AB20"/><text x="500" y="244" class="lab" text-anchor="middle" fill="#141414">AI reads</text>
+<rect x="702.0" y="216" width="196" height="40" rx="20" fill="#3535F3"/><text x="800" y="244" class="lab" text-anchor="middle" fill="#FFFFFF">Rules decide</text>
+<path d="M1000 254 V236 H1500 V254" fill="none" stroke="#141414" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+<rect x="1132.5" y="216" width="235" height="40" rx="20" fill="#FFFFFF" stroke="#141414" stroke-width="2.5"/><text x="1250" y="244" class="lab" text-anchor="middle" fill="#141414">People sign off</text>
+<rect x="150" y="312" width="1300" height="12" rx="6" fill="#E8E8FC"/>
+<rect x="150" y="312" width="1300" height="12" rx="6" fill="#3535F3" opacity="0.9"/>
+<circle cx="200" cy="318" r="52" fill="#FFFFFF"/><circle cx="200" cy="318" r="44" fill="#FFFFFF" stroke="#141414" stroke-width="4"/>
+<g transform="translate(180,298) scale(1.6667)" fill="none" stroke="#141414" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v11M7 9l5 5 5-5M4 16v4h16v-4"/></g>
+<text x="200" y="422" class="h2" text-anchor="middle">Drop</text>
+<text x="200" y="458" class="b" text-anchor="middle">Photos, PDFs, screenshots,</text>
+<text x="200" y="484" class="b" text-anchor="middle">e-tickets and handwritten</text>
+<text x="200" y="510" class="b" text-anchor="middle">slips, all at once, into</text>
+<text x="200" y="536" class="b" text-anchor="middle">a chat.</text>
+<rect x="116.8" y="570" width="166.4" height="32" rx="16" fill="#E8E8FC"/><text x="200" y="591" class="tag" text-anchor="middle">Browser chat app</text>
+<circle cx="500" cy="318" r="52" fill="#FFFFFF"/><circle cx="500" cy="318" r="44" fill="#F7AB20" stroke="#F7AB20" stroke-width="4"/>
+<g transform="translate(480,298) scale(1.6667)" fill="none" stroke="#141414" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12z"/><circle cx="12" cy="12" r="3.2"/></g>
+<text x="500" y="422" class="h2" text-anchor="middle">Read</text>
+<text x="500" y="458" class="b" text-anchor="middle">Pulls out every field with</text>
+<text x="500" y="484" class="b" text-anchor="middle">a confidence score, and</text>
+<text x="500" y="510" class="b" text-anchor="middle">any sign of tampering.</text>
+<text x="500" y="536" class="b" text-anchor="middle">It decides nothing.</text>
+<rect x="374.8" y="570" width="250.4" height="32" rx="16" fill="#E8E8FC"/><text x="500" y="591" class="tag" text-anchor="middle">AI model, via local server</text>
+<circle cx="800" cy="318" r="52" fill="#FFFFFF"/><circle cx="800" cy="318" r="44" fill="#3535F3" stroke="#3535F3" stroke-width="4"/>
+<g transform="translate(780,298) scale(1.6667)" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 6h10M10 12h10M10 18h10M3.5 6l1.5 1.5L8 4.5M3.5 12l1.5 1.5L8 10.5M3.5 18l1.5 1.5L8 16.5"/></g>
+<text x="800" y="422" class="h2" text-anchor="middle">Decide</text>
+<text x="800" y="458" class="b" text-anchor="middle">27 policy checks in code:</text>
+<text x="800" y="484" class="b" text-anchor="middle">trips, duplicates, alcohol,</text>
+<text x="800" y="510" class="b" text-anchor="middle">GST credit, limits. Asks</text>
+<text x="800" y="536" class="b" text-anchor="middle">at most 3 questions.</text>
+<rect x="683.2" y="570" width="233.60000000000002" height="32" rx="16" fill="#E8E8FC"/><text x="800" y="591" class="tag" text-anchor="middle">Rules engine · 120 tests</text>
+<circle cx="1100" cy="318" r="52" fill="#FFFFFF"/><circle cx="1100" cy="318" r="44" fill="#FFFFFF" stroke="#141414" stroke-width="4"/>
+<g transform="translate(1080,298) scale(1.6667)" fill="none" stroke="#141414" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 11.5 20.5 3.5l-6.5 17-3-6.5z M11 14l9.5-10.5"/></g>
+<text x="1100" y="422" class="h2" text-anchor="middle">Submit</text>
+<text x="1100" y="458" class="b" text-anchor="middle">The ready claim goes to</text>
+<text x="1100" y="484" class="b" text-anchor="middle">a mock reimbursement</text>
+<text x="1100" y="510" class="b" text-anchor="middle">system in one tap.</text>
+<rect x="979.0" y="570" width="242.0" height="32" rx="16" fill="#E8E8FC"/><text x="1100" y="591" class="tag" text-anchor="middle">Server · mock finance API</text>
+<circle cx="1400" cy="318" r="52" fill="#FFFFFF"/><circle cx="1400" cy="318" r="44" fill="#FFFFFF" stroke="#141414" stroke-width="4"/>
+<g transform="translate(1380,298) scale(1.6667)" fill="none" stroke="#141414" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M7.5 12.2l3 3 6-6.5"/></g>
+<text x="1400" y="422" class="h2" text-anchor="middle">Approve <tspan class="amp">&amp;</tspan> pay</text>
+<text x="1400" y="458" class="b" text-anchor="middle">The approver sees only</text>
+<text x="1400" y="484" class="b" text-anchor="middle">the exceptions, each with</text>
+<text x="1400" y="510" class="b" text-anchor="middle">its policy clause. Finance</text>
+<text x="1400" y="536" class="b" text-anchor="middle">marks it paid.</text>
+<rect x="1325.2" y="570" width="149.60000000000002" height="32" rx="16" fill="#E8E8FC"/><text x="1400" y="591" class="tag" text-anchor="middle">Approver inbox</text>
+<line x1="80" y1="646" x2="1520" y2="646" stroke="#E0E0E0" stroke-width="2"/>
+<text x="80" y="700" class="h3">Built and running in the prototype</text><circle cx="91" cy="738" r="11" fill="#3535F3"/><path d="M86 738l3.5 3.5 6.5-7" fill="none" stroke="#FFF" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/><text x="114" y="744" class="li">Chat app: drop bills, answer, submit, see the evidence</text><circle cx="91" cy="776" r="11" fill="#3535F3"/><path d="M86 776l3.5 3.5 6.5-7" fill="none" stroke="#FFF" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/><text x="114" y="782" class="li">Live AI reading with a swappable model; the key stays on the server</text><circle cx="91" cy="814" r="11" fill="#3535F3"/><path d="M86 814l3.5 3.5 6.5-7" fill="none" stroke="#FFF" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/><text x="114" y="820" class="li">Rules engine with 27 policy checks and 120 tests</text><circle cx="91" cy="852" r="11" fill="#3535F3"/><path d="M86 852l3.5 3.5 6.5-7" fill="none" stroke="#FFF" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/><text x="114" y="858" class="li">Mock reimbursement system and approver inbox</text><circle cx="91" cy="890" r="11" fill="#3535F3"/><path d="M86 890l3.5 3.5 6.5-7" fill="none" stroke="#FFF" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/><text x="114" y="896" class="li">Demo mode that runs offline on 12 synthetic bills</text><circle cx="91" cy="928" r="11" fill="#3535F3"/><path d="M86 928l3.5 3.5 6.5-7" fill="none" stroke="#FFF" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/><text x="114" y="934" class="li">GSTIN checksum, duplicate and tamper checks</text>
+<line x1="800" y1="680" x2="800" y2="926" stroke="#E0E0E0" stroke-width="2"/>
+<text x="840" y="700" class="h3">Next, for production</text><circle cx="851" cy="738" r="10" fill="none" stroke="#5A5A5A" stroke-width="2" stroke-dasharray="4 3.5"/><text x="874" y="744" class="lip">WhatsApp, Teams and JioChat as entry points</text><circle cx="851" cy="776" r="10" fill="none" stroke="#5A5A5A" stroke-width="2" stroke-dasharray="4 3.5"/><text x="874" y="782" class="lip">HRMS and SSO for employee, grade and approver</text><circle cx="851" cy="814" r="10" fill="none" stroke="#5A5A5A" stroke-width="2" stroke-dasharray="4 3.5"/><text x="874" y="820" class="lip">Database and bill storage (claims are in memory today)</text><circle cx="851" cy="852" r="10" fill="none" stroke="#5A5A5A" stroke-width="2" stroke-dasharray="4 3.5"/><text x="874" y="858" class="lip">Rules re-run on the server before approval</text><circle cx="851" cy="890" r="10" fill="none" stroke="#5A5A5A" stroke-width="2" stroke-dasharray="4 3.5"/><text x="874" y="896" class="lip">Live GSTN lookup, PII masking, India data residency</text><circle cx="851" cy="928" r="10" fill="none" stroke="#5A5A5A" stroke-width="2" stroke-dasharray="4 3.5"/><text x="874" y="934" class="lip">Real payouts through SAP or Oracle</text>
+<text x="80" y="974" class="foot">All bills, businesses, people and GSTINs shown are synthetic.</text>
+<text x="1520" y="974" class="foot" text-anchor="end">Reliance Jio AI Innovation Lab · Case 1, Expense <tspan class="amp">&amp;</tspan> Reimbursement Agent</text>
 </svg>
